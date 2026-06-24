@@ -55,7 +55,9 @@ This is the account used to manage collections and to run the seed script.
 ### 4. Seed paper data
 
 ```bash
-pip install requests   # only needed once
+python3 -m venv ~/.venvs/repro-sign-survey-backend   # only needed once
+source ~/.venvs/repro-sign-survey-backend/bin/activate
+pip install requests                                   # only needed once
 python3 seed.py --email admin@example.com --password yourpassword
 ```
 
@@ -121,6 +123,13 @@ locked_by = "" || locked_by = @request.auth.id
 ```
 
 Lock expiry (e.g. 30 minutes after `locked_at`) is checked client-side. A heartbeat keeps `locked_at` fresh while editing is in progress.
+
+### PocketBase API quirks
+
+These differ from typical REST API conventions and matter for frontend integration:
+
+- **Unauthenticated list** — returns `200` with an empty `items` array, not `401`. The `listRule` acts as a row filter, not a gate.
+- **Update blocked by lock** — returns `404` (not found), not `403` (forbidden). PocketBase hides records that don't satisfy the `updateRule`.
 
 ## API quick reference
 
