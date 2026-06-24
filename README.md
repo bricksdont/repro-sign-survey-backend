@@ -8,30 +8,30 @@ The frontend lives in [repro-sign-survey-ui](https://github.com/bricksdont/repro
 
 ### 1. Install PocketBase
 
-Download the latest binary from [pocketbase.io/docs](https://pocketbase.io/docs/) and place it in this directory.
+The release filename includes the version number, so use this one-liner to always grab the latest:
 
 **macOS (Apple Silicon):**
 ```bash
-curl -L https://github.com/pocketbase/pocketbase/releases/latest/download/pocketbase_darwin_arm64.zip -o pb.zip
-unzip pb.zip pocketbase && rm pb.zip
-chmod +x pocketbase
+VERSION=$(curl -s https://api.github.com/repos/pocketbase/pocketbase/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v') && \
+curl -L "https://github.com/pocketbase/pocketbase/releases/download/v${VERSION}/pocketbase_${VERSION}_darwin_arm64.zip" -o pb.zip && \
+unzip pb.zip pocketbase && rm pb.zip && chmod +x pocketbase
 ```
 
 **macOS (Intel):**
 ```bash
-curl -L https://github.com/pocketbase/pocketbase/releases/latest/download/pocketbase_darwin_amd64.zip -o pb.zip
-unzip pb.zip pocketbase && rm pb.zip
-chmod +x pocketbase
+VERSION=$(curl -s https://api.github.com/repos/pocketbase/pocketbase/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v') && \
+curl -L "https://github.com/pocketbase/pocketbase/releases/download/v${VERSION}/pocketbase_${VERSION}_darwin_amd64.zip" -o pb.zip && \
+unzip pb.zip pocketbase && rm pb.zip && chmod +x pocketbase
 ```
 
 **Linux (amd64):**
 ```bash
-curl -L https://github.com/pocketbase/pocketbase/releases/latest/download/pocketbase_linux_amd64.zip -o pb.zip
-unzip pb.zip pocketbase && rm pb.zip
-chmod +x pocketbase
+VERSION=$(curl -s https://api.github.com/repos/pocketbase/pocketbase/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v') && \
+curl -L "https://github.com/pocketbase/pocketbase/releases/download/v${VERSION}/pocketbase_${VERSION}_linux_amd64.zip" -o pb.zip && \
+unzip pb.zip pocketbase && rm pb.zip && chmod +x pocketbase
 ```
 
-> The `pocketbase` binary is gitignored. Check [github.com/pocketbase/pocketbase/releases](https://github.com/pocketbase/pocketbase/releases) for the latest version.
+> The `pocketbase` binary is gitignored. You can also download manually from [github.com/pocketbase/pocketbase/releases](https://github.com/pocketbase/pocketbase/releases).
 
 ### 2. Start the server
 
