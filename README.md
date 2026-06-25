@@ -81,6 +81,76 @@ Open the admin dashboard at http://localhost:8090/_/, navigate to **Collections 
 
 ---
 
+## Deploying to Fly.io
+
+The app is deployed at **https://repro-sign-survey.fly.dev** (Frankfurt region, shared-cpu-1x / 256 MB, auto-stops when idle).
+
+### First-time setup
+
+**1. Install flyctl**
+```bash
+brew install flyctl
+flyctl auth login
+```
+
+**2. Create the app and persistent volume**
+```bash
+flyctl apps create repro-sign-survey
+flyctl volumes create pb_data --region fra --size 1
+```
+
+**3. Deploy**
+```bash
+flyctl deploy
+```
+If the remote builder stalls, build locally instead (requires Docker Desktop to be running):
+```bash
+flyctl deploy --local-only
+```
+
+**4. Create the superuser on the remote instance**
+```bash
+flyctl ssh console --command "/pb/pocketbase superuser create me@x.com yourpassword"
+```
+
+**5. Seed the remote database**
+```bash
+source ~/.venvs/repro-sign-survey-backend/bin/activate
+python3 seed.py \
+  --pb-url https://repro-sign-survey.fly.dev \
+  --email me@x.com \
+  --password yourpassword
+```
+
+### Redeploying after changes
+
+```bash
+flyctl deploy
+```
+
+Migrations in `pb_migrations/` are applied automatically on startup. The volume at `/pb/pb_data` persists across deploys.
+
+### Resetting the remote database
+
+```bash
+python3 seed.py \
+  --pb-url https://repro-sign-survey.fly.dev \
+  --email me@x.com \
+  --password yourpassword \
+  --reset
+```
+
+### Useful commands
+
+```bash
+flyctl status                        # machine state and version
+flyctl logs                          # live log stream
+flyctl ssh console                   # shell into the running machine
+flyctl volumes list                  # check persistent volume
+```
+
+---
+
 ## Repository layout
 
 ```
