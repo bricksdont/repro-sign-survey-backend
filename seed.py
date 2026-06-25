@@ -1,16 +1,27 @@
 #!/usr/bin/env python3
 """
-Seed or reset the PocketBase `papers` collection.
+Seed or reset the PocketBase `papers` collection, or bulk-create reviewer accounts.
 
-Seed (default):
+Seed papers (default):
     python3 seed.py --email admin@example.com --password secret
     python3 seed.py --email admin@example.com --password secret --data papers.json
 
 Reset all papers to their initial seed state (no restart needed):
     python3 seed.py --email admin@example.com --password secret --reset
+
+Bulk-create reviewer accounts:
+    python3 seed.py --email admin@example.com --password secret \
+        --create-users a@example.com b@example.com c@example.com
+    python3 seed.py --email admin@example.com --password secret \
+        --create-users $(cat emails.txt)
+    python3 seed.py --email admin@example.com --password secret \
+        --create-users a@example.com b@example.com --credentials-out creds.csv
 """
 import argparse
+import csv
 import json
+import secrets
+import string
 import sys
 import urllib.parse
 from pathlib import Path
@@ -31,9 +42,12 @@ SEED_DEFAULTS = {
     "locked_at": None,
 }
 
+PASSWORD_ALPHABET = string.ascii_letters + string.digits
+PASSWORD_LENGTH = 16
+
 
 def parse_args():
-    p = argparse.ArgumentParser(description="Seed or reset PocketBase papers collection")
+    p = argparse.ArgumentParser(description="Seed, reset, or manage users in PocketBase")
     p.add_argument("--pb-url", default="http://localhost:8090", help="PocketBase base URL")
     p.add_argument("--email", required=True, help="Superuser email")
     p.add_argument("--password", required=True, help="Superuser password")
@@ -47,7 +61,22 @@ def parse_args():
         action="store_true",
         help="Reset all existing papers to their initial seed state instead of importing",
     )
+    p.add_argument(
+        "--create-users",
+        nargs="+",
+        metavar="EMAIL",
+        help="Bulk-create reviewer accounts for the given email addresses with random passwords",
+    )
+    p.add_argument(
+        "--credentials-out",
+        metavar="FILE",
+        help="Write generated credentials to a CSV file (only used with --create-users)",
+    )
     return p.parse_args()
+
+
+def generate_password() -> str:
+    return "".join(secrets.choice(PASSWORD_ALPHABET) for _ in range(PASSWORD_LENGTH))
 
 
 def authenticate(base_url: str, email: str, password: str) -> str:
@@ -166,13 +195,50 @@ def cmd_reset(base_url: str, headers: dict):
         sys.exit(1)
 
 
+def cmd_create_users(base_url: str, headers: dict, emails: list, credentials_out: str | None):
+    print(f"Creating {len(emails)} reviewer accounts...")
+
+    credentials = []
+    ok = failed = 0
+    for user_email in emails:
+        pw = generate_password()
+        resp = requests.post(
+            f"{base_url}/api/collections/users/records",
+            headers=headers,
+            json={"email": user_email, "password": pw, "passwordConfirm": pw},
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            print(f"  OK    {user_email}  {pw}")
+            credentials.append((user_email, pw))
+            ok += 1
+        else:
+            msg = resp.json().get("message", resp.text)
+            print(f"  ERROR {user_email}  ({msg})")
+            failed += 1
+
+    if credentials_out:
+        out = Path(credentials_out)
+        with open(out, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["email", "password"])
+            writer.writerows(credentials)
+        print(f"\nCredentials saved to {out}")
+
+    print(f"\nDone: {ok} created, {failed} errors")
+    if failed:
+        sys.exit(1)
+
+
 def main():
     args = parse_args()
     base_url = args.pb_url.rstrip("/")
     token = authenticate(base_url, args.email, args.password)
     headers = {"Authorization": f"Bearer {token}"}
 
-    if args.reset:
+    if args.create_users:
+        cmd_create_users(base_url, headers, args.create_users, args.credentials_out)
+    elif args.reset:
         cmd_reset(base_url, headers)
     else:
         cmd_seed(base_url, headers, Path(args.data))
