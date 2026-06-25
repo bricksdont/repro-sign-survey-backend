@@ -130,6 +130,10 @@ flyctl deploy --local-only
 flyctl ssh console --command "/pb/pocketbase superuser create me@x.com yourpassword"
 ```
 
+The superuser account gives access to the **admin dashboard** at:
+**https://repro-sign-survey.fly.dev/_/**
+Log in there with the superuser email and password to inspect collections, records, and schema.
+
 **5. Seed the remote database**
 ```bash
 source ~/.venvs/repro-sign-survey-backend/bin/activate
