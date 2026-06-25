@@ -25,6 +25,7 @@ import string
 import sys
 import urllib.parse
 from pathlib import Path
+from typing import Optional
 
 try:
     import requests
@@ -195,7 +196,7 @@ def cmd_reset(base_url: str, headers: dict):
         sys.exit(1)
 
 
-def cmd_create_users(base_url: str, headers: dict, emails: list, credentials_out: str | None):
+def cmd_create_users(base_url: str, headers: dict, emails: list, credentials_out: Optional[str]):
     print(f"Creating {len(emails)} reviewer accounts...")
 
     credentials = []
