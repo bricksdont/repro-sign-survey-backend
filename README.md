@@ -77,7 +77,24 @@ python3 seed.py --email admin@example.com --password yourpassword --reset
 
 ### 5. Create reviewer accounts
 
-Open the admin dashboard at http://localhost:8090/_/, navigate to **Collections → users**, and create accounts for each reviewer. Reviewers authenticate with email and password via the frontend.
+**Locally** — open the admin dashboard at http://localhost:8090/_/, navigate to **Collections → users**, and create accounts for each reviewer.
+
+**On Fly.io** — the PocketBase CLI has no command for creating regular users (only superusers). Use the API instead with your superuser token:
+
+```bash
+# Get a superuser token
+SUPERTOKEN=$(curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/_superusers/auth-with-password \
+  -H 'Content-Type: application/json' \
+  -d '{"identity":"me@x.com","password":"yourpassword"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+
+# Create a reviewer account
+curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/users/records \
+  -H "Authorization: Bearer $SUPERTOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"reviewer@example.com","password":"reviewerpassword","passwordConfirm":"reviewerpassword"}'
+```
+
+Reviewers authenticate with email and password via the frontend.
 
 ---
 
