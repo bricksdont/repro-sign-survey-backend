@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Lint (ruff check)
+        run: ruff check seed.py
+
+      - name: Format check (ruff format)
+        run: ruff format --check seed.py
+
+      - name: Syntax check
+        run: python3 -m py_compile seed.py
+
+      - name: Validate papers.json
+        run: python3 -m json.tool papers.json > /dev/null
+
+      - name: JS syntax check
+        run: node --check pb_migrations/1_create_papers_collection.js

@@ -17,6 +17,7 @@ Bulk-create reviewer accounts:
     python3 seed.py --email admin@example.com --password secret \
         --create-users a@example.com b@example.com --credentials-out creds.csv
 """
+
 import argparse
 import csv
 import json
@@ -48,8 +49,12 @@ PASSWORD_LENGTH = 16
 
 
 def parse_args():
-    p = argparse.ArgumentParser(description="Seed, reset, or manage users in PocketBase")
-    p.add_argument("--pb-url", default="http://localhost:8090", help="PocketBase base URL")
+    p = argparse.ArgumentParser(
+        description="Seed, reset, or manage users in PocketBase"
+    )
+    p.add_argument(
+        "--pb-url", default="http://localhost:8090", help="PocketBase base URL"
+    )
     p.add_argument("--email", required=True, help="Superuser email")
     p.add_argument("--password", required=True, help="Superuser password")
     p.add_argument(
@@ -82,7 +87,9 @@ def generate_password() -> str:
 
 def authenticate(base_url: str, email: str, password: str) -> str:
     url = f"{base_url}/api/collections/_superusers/auth-with-password"
-    resp = requests.post(url, json={"identity": email, "password": password}, timeout=10)
+    resp = requests.post(
+        url, json={"identity": email, "password": password}, timeout=10
+    )
     if resp.status_code != 200:
         sys.exit(f"Authentication failed ({resp.status_code}): {resp.text}")
     token = resp.json().get("token")
@@ -196,7 +203,9 @@ def cmd_reset(base_url: str, headers: dict):
         sys.exit(1)
 
 
-def cmd_create_users(base_url: str, headers: dict, emails: list, credentials_out: Optional[str]):
+def cmd_create_users(
+    base_url: str, headers: dict, emails: list, credentials_out: Optional[str]
+):
     print(f"Creating {len(emails)} reviewer accounts...")
 
     credentials = []
