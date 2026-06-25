@@ -1,0 +1,6 @@
+pb_data/
+pocketbase
+pb.zip
+*.db
+*.db-shm
+*.db-wal
