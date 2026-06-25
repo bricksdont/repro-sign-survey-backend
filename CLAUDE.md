@@ -92,6 +92,30 @@ User accounts live in the built-in `users` collection (email + password). Superu
 }
 ```
 
+## Resetting for testing
+
+**Soft reset (PocketBase keeps running)** — resets all annotation fields on every paper back to `needs_review` with empty arrays and no lock:
+
+```bash
+source ~/.venvs/repro-sign-survey-backend/bin/activate
+python3 seed.py --email me@x.com --password <superuser-password> --reset
+```
+
+**Hard reset (truly clean slate)** — restores the exact post-seed DB state, including any schema fixes. Requires a restart:
+
+```bash
+# One-time: take a snapshot right after seeding (while PocketBase is stopped)
+cp pb_data/data.db pb_data/data.db.seed
+
+# To reset later:
+pkill pocketbase   # or Ctrl-C in the server terminal
+cp pb_data/data.db.seed pb_data/data.db
+rm -f pb_data/data.db-shm pb_data/data.db-wal
+./pocketbase serve
+```
+
+Use the soft reset between test runs. Use the hard reset if the DB gets into a structurally broken state.
+
 ## Notes for the frontend agent
 
 - Replace `fetch('data.json')` with `GET /api/collections/papers/records?perPage=500` (auth required)

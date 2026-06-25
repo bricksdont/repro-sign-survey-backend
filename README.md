@@ -69,6 +69,12 @@ To import from a different JSON file (same `{papers: [...]}` format as the front
 python3 seed.py --email admin@example.com --password yourpassword --data /path/to/data.json
 ```
 
+**Resetting to seed state** — to wipe all annotations and locks and return every paper to `needs_review` without restarting PocketBase:
+
+```bash
+python3 seed.py --email admin@example.com --password yourpassword --reset
+```
+
 ### 5. Create reviewer accounts
 
 Open the admin dashboard at http://localhost:8090/_/, navigate to **Collections → users**, and create accounts for each reviewer. Reviewers authenticate with email and password via the frontend.
