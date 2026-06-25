@@ -16,7 +16,7 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 |------|---------|
 | `pb_migrations/1_create_papers_collection.js` | Collection schema + auth rules, applied automatically on `./pocketbase serve` |
 | `papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
-| `seed.py` | Idempotent importer: POSTs each paper from `papers.json` to PocketBase, skipping existing records |
+| `seed.py` | Idempotent importer (`--reset` to wipe annotations back to seed state) |
 | `pb_data/` | Runtime data directory — gitignored, created on first serve |
 | `pocketbase` | Binary — gitignored, download instructions in README |
 
