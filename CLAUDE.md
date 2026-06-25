@@ -2,12 +2,13 @@
 
 ## What this is
 
-PocketBase backend for a Sign Language Processing reproducibility survey. Multiple reviewers annotate papers (metadata, code repos, datasets, metrics, status). All reviewers share one canonical record per paper. The companion frontend is [repro-sign-survey-ui](https://github.com/bricksdont/repro-sign-survey-ui), which currently uses localStorage — wiring it to this API is a separate task.
+PocketBase backend for a Sign Language Processing reproducibility survey. Multiple reviewers annotate papers (metadata, code repos, datasets, metrics, status). All reviewers share one canonical record per paper. The companion frontend is [repro-sign-survey-ui](https://github.com/bricksdont/repro-sign-survey-ui); the PocketBase integration is in progress on the `feature/pocketbase-backend` branch there.
 
 ## Stack
 
 - **PocketBase** — single binary, SQLite-backed, auto-generates REST API and admin UI. Version pinned by whatever binary is in the repo root (gitignored).
 - **Python** — `seed.py` only; uses `requests` from the venv at `~/.venvs/repro-sign-survey-backend`.
+- **Docker + Fly.io** — for the hosted deployment (see below).
 - No application server, no framework, no build step.
 
 ## File layout
@@ -17,8 +18,20 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 | `pb_migrations/1_create_papers_collection.js` | Collection schema + auth rules, applied automatically on `./pocketbase serve` |
 | `papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed.py` | Idempotent importer (`--reset` to wipe annotations back to seed state) |
+| `Dockerfile` | Alpine image that downloads the PocketBase binary and copies `pb_migrations/` |
+| `fly.toml` | Fly.io app config — shared-cpu-1x/256 MB, Frankfurt, persistent volume |
+| `.dockerignore` | Excludes `pb_data/`, local binary, and SQLite WAL files from the image |
 | `pb_data/` | Runtime data directory — gitignored, created on first serve |
 | `pocketbase` | Binary — gitignored, download instructions in README |
+
+## Deployed instance
+
+Live at **https://repro-sign-survey.fly.dev** (Frankfurt, auto-stops when idle).
+
+- Admin dashboard: https://repro-sign-survey.fly.dev/_/
+- API: https://repro-sign-survey.fly.dev/api/
+
+Redeploy after changes: `flyctl deploy`
 
 ## Running locally
 
@@ -31,9 +44,26 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 
 First-time setup:
 ```bash
-./pocketbase superuser create me@example.com password
+./pocketbase superuser create me@x.com password
 source ~/.venvs/repro-sign-survey-backend/bin/activate
-python3 seed.py --email me@example.com --password password
+python3 seed.py --email me@x.com --password password
+```
+
+## Creating reviewer accounts
+
+**Locally** — use the admin dashboard at `/_/` → Collections → users → New record.
+
+**On Fly.io** — the PocketBase CLI has no command for regular users (only superusers). Use the API:
+
+```bash
+SUPERTOKEN=$(curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/_superusers/auth-with-password \
+  -H 'Content-Type: application/json' \
+  -d '{"identity":"me@x.com","password":"yourpassword"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+
+curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/users/records \
+  -H "Authorization: Bearer $SUPERTOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"reviewer@example.com","password":"pass","passwordConfirm":"pass"}'
 ```
 
 ## Data model — `papers` collection
@@ -60,8 +90,8 @@ User accounts live in the built-in `users` collection (email + password). Superu
 
 ## Edit locking
 
-- Frontend acquires lock on paper open: `PATCH {locked_by: userId, locked_at: now}`
-- Frontend releases lock on save / navigate away: `PATCH {locked_by: "", locked_at: null}`
+- Frontend acquires lock on paper open: `PATCH {locked_by: userId, locked_at: <ISO timestamp>}`
+- Frontend releases lock on save / navigate away: `PATCH {locked_by: "", locked_at: ""}`
 - Frontend sends heartbeat while editing to keep `locked_at` fresh
 - Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no server-side TTL in the PoC
 
@@ -72,6 +102,7 @@ User accounts live in the built-in `users` collection (email + password). Superu
 - **Record IDs** — PocketBase assigns opaque 15-char IDs (e.g. `xscyqaugyl1plkz`). Use `paper_id` for URL routing; use the PocketBase `id` for API calls.
 - **Superuser auth** endpoint: `POST /api/collections/_superusers/auth-with-password` (different from regular user auth at `/api/collections/users/auth-with-password`).
 - **JSON fields** (`code_repos`, `datasets`, `metrics`) must be sent as actual JSON arrays, not strings.
+- **Clearing date fields** — send `""` (empty string), not `null`. Applies to `locked_at`.
 
 ## Seed data
 
@@ -97,11 +128,16 @@ User accounts live in the built-in `users` collection (email + password). Superu
 **Soft reset (PocketBase keeps running)** — resets all annotation fields on every paper back to `needs_review` with empty arrays and no lock:
 
 ```bash
+# Local
 source ~/.venvs/repro-sign-survey-backend/bin/activate
 python3 seed.py --email me@x.com --password <superuser-password> --reset
+
+# Remote
+python3 seed.py --pb-url https://repro-sign-survey.fly.dev \
+  --email me@x.com --password <superuser-password> --reset
 ```
 
-**Hard reset (truly clean slate)** — restores the exact post-seed DB state, including any schema fixes. Requires a restart:
+**Hard reset (truly clean slate, local only)** — restores the exact post-seed DB state. Requires a restart:
 
 ```bash
 # One-time: take a snapshot right after seeding (while PocketBase is stopped)
@@ -114,12 +150,4 @@ rm -f pb_data/data.db-shm pb_data/data.db-wal
 ./pocketbase serve
 ```
 
-Use the soft reset between test runs. Use the hard reset if the DB gets into a structurally broken state.
-
-## Notes for the frontend agent
-
-- Replace `fetch('data.json')` with `GET /api/collections/papers/records?perPage=500` (auth required)
-- Replace `localStorage.setItem('paper:id', ...)` with `PATCH /api/collections/papers/records/{pb_id}`
-- The frontend needs `paper_id` for URL params (`?id=...`) and PocketBase's `id` for API calls — keep both
-- Implement lock acquire / heartbeat / release around the paper detail view
-- All requests need `Authorization: Bearer <token>`
+Use the soft reset between test runs. Use the hard reset if the local DB gets into a structurally broken state.
