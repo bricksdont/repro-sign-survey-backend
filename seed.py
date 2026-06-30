@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 """
-Seed or reset the PocketBase `papers` collection, or bulk-create reviewer accounts.
+Seed or reset a PocketBase collection, or bulk-create reviewer accounts.
 
-Seed papers (default):
+Seed papers (default collection: papers):
     python3 seed.py --email admin@example.com --password secret
     python3 seed.py --email admin@example.com --password secret --data papers.json
 
-Reset all papers to their initial seed state (no restart needed):
+Seed check_papers:
+    python3 seed.py --email admin@example.com --password secret \
+        --collection check_papers --data check_papers.json
+
+Reset all records to seed state (no restart needed):
     python3 seed.py --email admin@example.com --password secret --reset
+    python3 seed.py --email admin@example.com --password secret \
+        --collection check_papers --reset
 
 Bulk-create reviewer accounts:
     python3 seed.py --email admin@example.com --password secret \
@@ -34,22 +40,29 @@ except ImportError:
     sys.exit("requests is not installed. Run: pip install requests")
 
 SEED_DEFAULTS = {
-    # review task
-    "code_repos": [],
-    "datasets": [],
-    "metrics": [],
-    "status": "needs_review",
-    "flag_reason": "",
-    "rejection_reason": "",
-    "locked_by": "",
-    "locked_at": None,
-    # checking task
-    "has_empirical_results": "",
-    "is_sign_language_processing": "",
-    "check_status": "needs_check",
-    "check_flag_reason": "",
-    "check_locked_by": "",
-    "check_locked_at": "",
+    "papers": {
+        "code_repos": [],
+        "datasets": [],
+        "metrics": [],
+        "status": "needs_review",
+        "flag_reason": "",
+        "rejection_reason": "",
+        "locked_by": "",
+        "locked_at": None,
+    },
+    "check_papers": {
+        "has_empirical_results": "",
+        "is_sign_language_processing": "",
+        "check_status": "needs_check",
+        "check_flag_reason": "",
+        "check_locked_by": "",
+        "check_locked_at": "",
+    },
+}
+
+PAPER_FIELDS = {
+    "papers": ["paper_id", "pdf_url", "title", "year", "venue", "peer_reviewed"],
+    "check_papers": ["paper_id", "pdf_url", "title", "year"],
 }
 
 PASSWORD_ALPHABET = string.ascii_letters + string.digits
@@ -66,14 +79,20 @@ def parse_args():
     p.add_argument("--email", required=True, help="Superuser email")
     p.add_argument("--password", required=True, help="Superuser password")
     p.add_argument(
+        "--collection",
+        default="papers",
+        choices=list(SEED_DEFAULTS.keys()),
+        help="Collection to seed or reset (default: papers)",
+    )
+    p.add_argument(
         "--data",
-        default=str(Path(__file__).parent / "papers.json"),
-        help="Path to JSON file with {papers: [...]} (default: papers.json next to this script)",
+        default=None,
+        help="Path to JSON file with {papers: [...]} (default: <collection>.json next to this script)",
     )
     p.add_argument(
         "--reset",
         action="store_true",
-        help="Reset all existing papers to their initial seed state instead of importing",
+        help="Reset all existing records to their initial seed state instead of importing",
     )
     p.add_argument(
         "--create-users",
@@ -107,12 +126,12 @@ def authenticate(base_url: str, email: str, password: str) -> str:
     return token
 
 
-def fetch_all_records(base_url: str, headers: dict) -> list:
+def fetch_all_records(base_url: str, headers: dict, collection: str) -> list:
     records = []
     page = 1
     while True:
         resp = requests.get(
-            f"{base_url}/api/collections/papers/records?perPage=500&page={page}",
+            f"{base_url}/api/collections/{collection}/records?perPage=500&page={page}",
             headers=headers,
             timeout=10,
         )
@@ -126,29 +145,24 @@ def fetch_all_records(base_url: str, headers: dict) -> list:
     return records
 
 
-def paper_exists(base_url: str, headers: dict, paper_id: str) -> bool:
+def paper_exists(base_url: str, headers: dict, collection: str, paper_id: str) -> bool:
     encoded = urllib.parse.quote(f'(paper_id="{paper_id}")')
-    url = f"{base_url}/api/collections/papers/records?filter={encoded}&perPage=1"
+    url = f"{base_url}/api/collections/{collection}/records?filter={encoded}&perPage=1"
     resp = requests.get(url, headers=headers, timeout=10)
     if resp.status_code != 200:
         return False
     return resp.json().get("totalItems", 0) > 0
 
 
-def create_paper(base_url: str, headers: dict, paper: dict) -> bool:
-    payload = {
-        "paper_id": paper["id"],
-        "pdf_url": paper.get("pdf_url") or "",
-        "title": paper.get("title") or "",
-        "year": paper.get("year"),
-        "venue": paper.get("venue") or "",
-        "peer_reviewed": paper.get("peer_reviewed"),
-        **SEED_DEFAULTS,
-    }
+def create_record(base_url: str, headers: dict, collection: str, paper: dict) -> bool:
+    defaults = SEED_DEFAULTS[collection]
+    bib_fields = PAPER_FIELDS[collection]
+    payload = {f: paper.get("id" if f == "paper_id" else f) for f in bib_fields}
     payload = {k: v for k, v in payload.items() if v is not None}
+    payload.update({k: v for k, v in defaults.items() if v is not None})
 
     resp = requests.post(
-        f"{base_url}/api/collections/papers/records",
+        f"{base_url}/api/collections/{collection}/records",
         headers=headers,
         json=payload,
         timeout=10,
@@ -156,10 +170,11 @@ def create_paper(base_url: str, headers: dict, paper: dict) -> bool:
     return resp.status_code == 200
 
 
-def reset_paper(base_url: str, headers: dict, pb_id: str, paper_id: str) -> bool:
-    payload = {k: v for k, v in SEED_DEFAULTS.items() if v is not None}
+def reset_record(base_url: str, headers: dict, collection: str, pb_id: str) -> bool:
+    defaults = SEED_DEFAULTS[collection]
+    payload = {k: v for k, v in defaults.items() if v is not None}
     resp = requests.patch(
-        f"{base_url}/api/collections/papers/records/{pb_id}",
+        f"{base_url}/api/collections/{collection}/records/{pb_id}",
         headers=headers,
         json=payload,
         timeout=10,
@@ -167,7 +182,7 @@ def reset_paper(base_url: str, headers: dict, pb_id: str, paper_id: str) -> bool
     return resp.status_code == 200
 
 
-def cmd_seed(base_url: str, headers: dict, data_path: Path):
+def cmd_seed(base_url: str, headers: dict, collection: str, data_path: Path):
     with open(data_path) as f:
         data = json.load(f)
     papers = data.get("papers", [])
@@ -178,10 +193,10 @@ def cmd_seed(base_url: str, headers: dict, data_path: Path):
     created = skipped = errors = 0
     for paper in papers:
         pid = paper.get("id", "?")
-        if paper_exists(base_url, headers, pid):
+        if paper_exists(base_url, headers, collection, pid):
             print(f"  SKIP  {pid}")
             skipped += 1
-        elif create_paper(base_url, headers, paper):
+        elif create_record(base_url, headers, collection, paper):
             print(f"  OK    {pid}")
             created += 1
         else:
@@ -193,13 +208,13 @@ def cmd_seed(base_url: str, headers: dict, data_path: Path):
         sys.exit(1)
 
 
-def cmd_reset(base_url: str, headers: dict):
-    records = fetch_all_records(base_url, headers)
-    print(f"Resetting {len(records)} papers to seed state...")
+def cmd_reset(base_url: str, headers: dict, collection: str):
+    records = fetch_all_records(base_url, headers, collection)
+    print(f"Resetting {len(records)} records in '{collection}' to seed state...")
 
     ok = failed = 0
     for r in records:
-        if reset_paper(base_url, headers, r["id"], r["paper_id"]):
+        if reset_record(base_url, headers, collection, r["id"]):
             print(f"  RESET {r['paper_id']}")
             ok += 1
         else:
@@ -256,10 +271,18 @@ def main():
 
     if args.create_users:
         cmd_create_users(base_url, headers, args.create_users, args.credentials_out)
-    elif args.reset:
-        cmd_reset(base_url, headers)
+        return
+
+    collection = args.collection
+    if args.reset:
+        cmd_reset(base_url, headers, collection)
     else:
-        cmd_seed(base_url, headers, Path(args.data))
+        data_path = (
+            Path(args.data)
+            if args.data
+            else Path(__file__).parent / f"{collection}.json"
+        )
+        cmd_seed(base_url, headers, collection, data_path)
 
 
 if __name__ == "__main__":
