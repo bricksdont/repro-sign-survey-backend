@@ -79,12 +79,13 @@ All annotation fields live on one shared record. The collection has two independ
 - `code_repos`, `datasets`, `metrics` — JSON arrays
 - `locked_by` / `locked_at` — review-task optimistic lock (enforced in `updateRule`)
 
-**Checking task** (`pb_migrations/2_add_checking_fields.js`):
+**Checking task** — separate `check_papers` collection (`pb_migrations/3_create_check_papers_collection.js`):
+- `paper_id`, `pdf_url`, `title`, `year` — bibliographic fields (no `venue` or `peer_reviewed`)
 - `has_empirical_results` — select: `yes` | `no` | empty (not yet answered)
 - `is_sign_language_processing` — select: `yes` | `no` | empty (not yet answered)
-- `check_status` — select: `needs_check` | `checked` | `flagged`
-- `check_flag_reason` — text
-- `check_locked_by` / `check_locked_at` — checking-task lock (client-side only, no server rule)
+- `status` — select: `needs_check` | `checked` | `flagged`
+- `flag_reason` — text
+- `locked_by` / `locked_at` — lock fields (same names as in `papers`; no cross-collection conflict since collections are independent)
 
 ## Auth rules
 
@@ -101,16 +102,18 @@ User accounts live in the built-in `users` collection (email + password). Superu
 
 There are two independent lock sets — a reviewer locking a paper does not block a checker from opening it.
 
-**Review lock** (`locked_by` / `locked_at`) — enforced server-side via the collection's `updateRule`:
+Both `papers` and `check_papers` use the same lock field names (`locked_by` / `locked_at`) and an identical `updateRule`:
+
+```
+locked_by = "" || locked_by = @request.auth.id
+```
+
+Lock lifecycle (same for both collections):
 - Acquire: `PATCH {locked_by: userId, locked_at: <ISO timestamp>}`
 - Release: `PATCH {locked_by: "", locked_at: ""}`
 - Heartbeat: `PATCH {locked_at: <ISO timestamp>}` while editing
 
-**Check lock** (`check_locked_by` / `check_locked_at`) — same lifecycle, but no server-side rule; enforcement is client-side only.
-
-Lock expiry (e.g. 30 min after the lock timestamp) is enforced client-side for both locks.
-
-**Why the check lock is client-side only:** PocketBase has a single `updateRule` per collection. Extending it to enforce both locks simultaneously would require something like `(locked_by = "" || locked_by = @request.auth.id) && (check_locked_by = "" || check_locked_by = @request.auth.id)`, which would block a reviewer from saving if a checker holds the check lock — defeating the purpose of independent locks. Since the two tasks edit non-overlapping fields, client-side enforcement is sufficient for the PoC.
+Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no server-side TTL in the PoC. Because the collections are independent, a reviewer locking a record in `papers` has no effect on the same paper's record in `check_papers`.
 
 ## PocketBase API quirks (important for frontend integration)
 

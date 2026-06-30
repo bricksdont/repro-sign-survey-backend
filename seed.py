@@ -53,10 +53,10 @@ SEED_DEFAULTS = {
     "check_papers": {
         "has_empirical_results": "",
         "is_sign_language_processing": "",
-        "check_status": "needs_check",
-        "check_flag_reason": "",
-        "check_locked_by": "",
-        "check_locked_at": "",
+        "status": "needs_check",
+        "flag_reason": "",
+        "locked_by": "",
+        "locked_at": "",
     },
 }
 

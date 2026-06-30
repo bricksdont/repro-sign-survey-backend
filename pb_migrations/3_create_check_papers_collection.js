@@ -44,26 +44,26 @@ migrate((app) => {
         values: ["yes", "no"],
       },
       {
-        name: "check_status",
+        name: "status",
         type: "select",
         required: false,
         maxSelect: 1,
         values: ["needs_check", "checked", "flagged"],
       },
       {
-        name: "check_flag_reason",
+        name: "flag_reason",
         type: "text",
         required: false,
         max: 500,
       },
       {
-        name: "check_locked_by",
+        name: "locked_by",
         type: "text",
         required: false,
         max: 200,
       },
       {
-        name: "check_locked_at",
+        name: "locked_at",
         type: "date",
         required: false,
       },
@@ -74,7 +74,7 @@ migrate((app) => {
     listRule: "@request.auth.id != \"\"",
     viewRule: "@request.auth.id != \"\"",
     createRule: "",
-    updateRule: "check_locked_by = \"\" || check_locked_by = @request.auth.id",
+    updateRule: "locked_by = \"\" || locked_by = @request.auth.id",
     deleteRule: "",
   });
 

@@ -231,16 +231,22 @@ The `papers` collection stores one shared, canonical record per paper. All revie
 | `locked_by`       | text   | User ID of current reviewer; empty = unlocked           |
 | `locked_at`       | date   | Lock heartbeat timestamp; expiry enforced client-side   |
 
-**Checking task fields** (filled in by the checking workflow, independent of review):
+**`check_papers` collection** (checking workflow, independent of `papers`):
 
-| Field                      | Type   | Description                                              |
-|----------------------------|--------|----------------------------------------------------------|
-| `has_empirical_results`    | select | `yes` · `no` · empty = not yet answered                 |
-| `is_sign_language_processing` | select | `yes` · `no` · empty = not yet answered             |
-| `check_status`             | select | `needs_check` · `checked` · `flagged`                   |
-| `check_flag_reason`        | text   |                                                          |
-| `check_locked_by`          | text   | User ID of current checker; empty = unlocked             |
-| `check_locked_at`          | date   | Check-lock heartbeat timestamp                           |
+| Field                         | Type   | Description                                          |
+|-------------------------------|--------|------------------------------------------------------|
+| `paper_id`                    | text   | Unique kebab ID — same value as in `papers`          |
+| `pdf_url`                     | url    | Direct PDF link                                      |
+| `title`                       | text   |                                                      |
+| `year`                        | number |                                                      |
+| `has_empirical_results`       | select | `yes` · `no` · empty = not yet answered              |
+| `is_sign_language_processing` | select | `yes` · `no` · empty = not yet answered              |
+| `status`                      | select | `needs_check` · `checked` · `flagged`                |
+| `flag_reason`                 | text   |                                                      |
+| `locked_by`                   | text   | User ID of current checker; empty = unlocked         |
+| `locked_at`                   | date   | Lock heartbeat timestamp; expiry enforced client-side|
+
+Field names in `check_papers` deliberately mirror `papers` (`status`, `locked_by`, `locked_at`, `flag_reason`) so frontend components can work against either collection without field-name mapping. No conflict arises since the collections are independent.
 
 ### API access rules
 
@@ -253,17 +259,13 @@ The `papers` collection stores one shared, canonical record per paper. All revie
 
 ### Edit locking
 
-The review and checking tasks use **independent lock fields** (`locked_by`/`locked_at` and `check_locked_by`/`check_locked_at`). This means a reviewer locking a paper does not block a checker from opening it simultaneously, and vice versa.
-
-The review lock is enforced at the API level via the collection's `updateRule`:
+Both collections use the same lock fields (`locked_by` / `locked_at`) and an identical server-side `updateRule`:
 
 ```
 locked_by = "" || locked_by = @request.auth.id
 ```
 
-The check lock fields have no equivalent server-side rule — lock enforcement for the checking task is handled client-side only (same as lock expiry).
-
-Lock expiry (e.g. 30 minutes after the lock timestamp) is checked client-side. A heartbeat keeps the timestamp fresh while editing is in progress.
+A reviewer locking a record in `papers` has no effect on the same paper's record in `check_papers` — the collections are fully independent. Lock expiry (e.g. 30 minutes after `locked_at`) is checked client-side; a heartbeat keeps the timestamp fresh while editing.
 
 ### PocketBase API quirks
 
