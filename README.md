@@ -183,6 +183,27 @@ python3 seed.py \
   --reset
 ```
 
+### Backups
+
+**Manual backup (recommended before significant data work):**
+
+1. Open the admin dashboard at **https://repro-sign-survey.fly.dev/_/**
+2. Go to **Settings → Backups** and click **Create new backup**
+3. Download the resulting zip file to your local machine
+
+The zip contains the full SQLite database and can be used to restore the instance. Store it somewhere safe outside Fly.io.
+
+**Automatic Fly.io volume snapshots:**
+
+Fly.io automatically snapshots the persistent volume daily. Snapshots are retained for **5 days** by default (configurable up to 60 days with `--snapshot-retention`). To list available snapshots:
+
+```bash
+flyctl volumes list                              # get volume ID
+flyctl volumes snapshots list <volume-id>
+```
+
+These snapshots are an infrastructure-level safety net, but since they live on Fly.io's infrastructure and are only kept for 5 days, they are not a substitute for periodically downloading a backup zip.
+
 ### Useful commands
 
 ```bash
