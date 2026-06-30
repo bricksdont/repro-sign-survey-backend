@@ -58,21 +58,28 @@ This is the account used to manage collections and to run the seed script.
 python3 -m venv ~/.venvs/repro-sign-survey-backend   # only needed once
 source ~/.venvs/repro-sign-survey-backend/bin/activate
 pip install requests                                   # only needed once
+
+# Seed the review collection (67 papers)
 python3 seed.py --email admin@example.com --password yourpassword
+
+# Seed the checking collection (56 papers)
+python3 seed.py --email admin@example.com --password yourpassword --collection check_papers
 ```
 
-This imports the 67 SLP papers in `papers.json` into PocketBase. Running it again is safe — it skips papers that already exist.
+The two collections are independent — not all papers appear in both. Running either command again is safe; it skips records that already exist.
 
-To import from a different JSON file (same `{papers: [...]}` format as the frontend's `data.json`):
+To import from a custom JSON file (same `{papers: [...]}` format):
 
 ```bash
 python3 seed.py --email admin@example.com --password yourpassword --data /path/to/data.json
+python3 seed.py --email admin@example.com --password yourpassword --collection check_papers --data /path/to/check_papers.json
 ```
 
-**Resetting to seed state** — to wipe all annotations and locks and return every paper to `needs_review` without restarting PocketBase:
+**Resetting to seed state** — wipes all annotations and locks without restarting PocketBase:
 
 ```bash
 python3 seed.py --email admin@example.com --password yourpassword --reset
+python3 seed.py --email admin@example.com --password yourpassword --collection check_papers --reset
 ```
 
 ### 5. Create reviewer accounts
@@ -141,6 +148,11 @@ python3 seed.py \
   --pb-url https://repro-sign-survey.fly.dev \
   --email me@x.com \
   --password yourpassword
+python3 seed.py \
+  --pb-url https://repro-sign-survey.fly.dev \
+  --email me@x.com \
+  --password yourpassword \
+  --collection check_papers
 ```
 
 ### Redeploying after changes
@@ -158,6 +170,12 @@ python3 seed.py \
   --pb-url https://repro-sign-survey.fly.dev \
   --email me@x.com \
   --password yourpassword \
+  --reset
+python3 seed.py \
+  --pb-url https://repro-sign-survey.fly.dev \
+  --email me@x.com \
+  --password yourpassword \
+  --collection check_papers \
   --reset
 ```
 
