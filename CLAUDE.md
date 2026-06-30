@@ -15,10 +15,11 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 
 | File | Purpose |
 |------|---------|
-| `pb_migrations/1_create_papers_collection.js` | Papers collection schema + auth rules, applied automatically on `./pocketbase serve` |
-| `pb_migrations/2_add_checking_fields.js` | Adds 6 checking-task fields; backfills `check_status = needs_check` on existing records |
+| `pb_migrations/1_create_papers_collection.js` | `papers` collection schema + auth rules, applied automatically on `./pocketbase serve` |
+| `pb_migrations/2_create_check_papers_collection.js` | `check_papers` collection schema + auth rules |
 | `papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
-| `seed.py` | Idempotent importer (`--reset` to wipe all annotation fields; `--create-users` for bulk account creation) |
+| `check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
+| `seed.py` | Idempotent importer; `--collection` to target either collection; `--reset` to wipe annotation fields; `--create-users` for bulk account creation |
 | `Dockerfile` | Alpine image that downloads the PocketBase binary and copies `pb_migrations/` |
 | `fly.toml` | Fly.io app config — shared-cpu-1x/256 MB, Frankfurt, persistent volume |
 | `.dockerignore` | Excludes `pb_data/`, local binary, and SQLite WAL files from the image |
@@ -49,6 +50,7 @@ First-time setup:
 ./pocketbase superuser create me@x.com password
 source ~/.venvs/repro-sign-survey-backend/bin/activate
 python3 seed.py --email me@x.com --password password
+python3 seed.py --email me@x.com --password password --collection check_papers
 ```
 
 ## Creating reviewer accounts
@@ -79,7 +81,7 @@ All annotation fields live on one shared record. The collection has two independ
 - `code_repos`, `datasets`, `metrics` — JSON arrays
 - `locked_by` / `locked_at` — review-task optimistic lock (enforced in `updateRule`)
 
-**Checking task** — separate `check_papers` collection (`pb_migrations/3_create_check_papers_collection.js`):
+**Checking task** — separate `check_papers` collection (`pb_migrations/2_create_check_papers_collection.js`):
 - `paper_id`, `pdf_url`, `title`, `year` — bibliographic fields (no `venue` or `peer_reviewed`)
 - `has_empirical_results` — select: `yes` | `no` | empty (not yet answered)
 - `is_sign_language_processing` — select: `yes` | `no` | empty (not yet answered)
@@ -99,8 +101,6 @@ All annotation fields live on one shared record. The collection has two independ
 User accounts live in the built-in `users` collection (email + password). Superusers are a separate `_superusers` collection.
 
 ## Edit locking
-
-There are two independent lock sets — a reviewer locking a paper does not block a checker from opening it.
 
 Both `papers` and `check_papers` use the same lock field names (`locked_by` / `locked_at`) and an identical `updateRule`:
 
@@ -145,16 +145,20 @@ Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no 
 
 ## Resetting for testing
 
-**Soft reset (PocketBase keeps running)** — resets all annotation fields on every paper (both review and checking tasks) back to their seed defaults (`needs_review`, `needs_check`, empty arrays, no locks):
+**Soft reset (PocketBase keeps running)** — resets all annotation fields back to seed defaults (`needs_review` / `needs_check`, empty arrays, no locks). Run for each collection:
 
 ```bash
-# Local
 source ~/.venvs/repro-sign-survey-backend/bin/activate
+
+# Local
 python3 seed.py --email me@x.com --password <superuser-password> --reset
+python3 seed.py --email me@x.com --password <superuser-password> --collection check_papers --reset
 
 # Remote
 python3 seed.py --pb-url https://repro-sign-survey.fly.dev \
   --email me@x.com --password <superuser-password> --reset
+python3 seed.py --pb-url https://repro-sign-survey.fly.dev \
+  --email me@x.com --password <superuser-password> --collection check_papers --reset
 ```
 
 **Hard reset (truly clean slate, local only)** — restores the exact post-seed DB state. Requires a restart:

@@ -39,7 +39,7 @@ unzip pb.zip pocketbase && rm pb.zip && chmod +x pocketbase
 ./pocketbase serve
 ```
 
-On first run this creates `pb_data/` (database + files) and automatically applies all migrations in `pb_migrations/`, including the `papers` collection schema. The server listens on port **8090**.
+On first run this creates `pb_data/` (database + files) and automatically applies all migrations in `pb_migrations/`, creating both the `papers` and `check_papers` collections. The server listens on port **8090**.
 
 - Admin dashboard: http://localhost:8090/_/
 - REST API: http://localhost:8090/api/
@@ -199,9 +199,10 @@ flyctl volumes list                  # check persistent volume
 ```
 pb_migrations/
   1_create_papers_collection.js   # papers collection schema + auth rules
-  2_add_checking_fields.js        # adds checking-task fields (migration 2)
-papers.json                       # seed data: 67 SLP papers
-seed.py                           # imports/resets papers; bulk user creation
+  2_create_check_papers_collection.js  # check_papers collection schema + auth rules
+papers.json                       # seed data: 67 SLP papers (review task)
+check_papers.json                 # seed data: 56 SLP papers (checking task)
+seed.py                           # imports/resets either collection; bulk user creation
 Dockerfile                        # Alpine image for Fly.io deployment
 fly.toml                          # Fly.io app config (Frankfurt, persistent volume)
 .github/workflows/ci.yml          # CI: lint, format, JSON validation, JS syntax
