@@ -1,20 +1,5 @@
 /// <reference path="../pb_data/types.d.ts" />
 migrate((app) => {
-  // Remove checking fields that were added to papers by migration 2
-  const papers = app.findCollectionByNameOrId("papers");
-  for (const name of [
-    "has_empirical_results",
-    "is_sign_language_processing",
-    "check_status",
-    "check_flag_reason",
-    "check_locked_by",
-    "check_locked_at",
-  ]) {
-    papers.fields.removeByName(name);
-  }
-  app.save(papers);
-
-  // Create the check_papers collection
   const collection = new Collection({
     name: "check_papers",
     type: "base",
@@ -95,35 +80,6 @@ migrate((app) => {
 
   app.save(collection);
 }, (app) => {
-  const check = app.findCollectionByNameOrId("check_papers");
-  app.delete(check);
-
-  const papers = app.findCollectionByNameOrId("papers");
-  papers.fields.addAt(papers.fields.length, new SelectField({
-    name: "has_empirical_results",
-    maxSelect: 1,
-    values: ["yes", "no"],
-  }));
-  papers.fields.addAt(papers.fields.length, new SelectField({
-    name: "is_sign_language_processing",
-    maxSelect: 1,
-    values: ["yes", "no"],
-  }));
-  papers.fields.addAt(papers.fields.length, new SelectField({
-    name: "check_status",
-    maxSelect: 1,
-    values: ["needs_check", "checked", "flagged"],
-  }));
-  papers.fields.addAt(papers.fields.length, new TextField({
-    name: "check_flag_reason",
-    max: 500,
-  }));
-  papers.fields.addAt(papers.fields.length, new TextField({
-    name: "check_locked_by",
-    max: 200,
-  }));
-  papers.fields.addAt(papers.fields.length, new DateField({
-    name: "check_locked_at",
-  }));
-  app.save(papers);
+  const collection = app.findCollectionByNameOrId("check_papers");
+  app.delete(collection);
 });
