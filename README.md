@@ -210,37 +210,30 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 
 ## Data model
 
-The `papers` collection stores one shared, canonical record per paper. All reviewers edit the same record.
-
-**Bibliographic fields** (set at seed time, not edited by reviewers):
-
-| Field           | Type   | Description                          |
-|-----------------|--------|--------------------------------------|
-| `paper_id`      | text   | Unique kebab ID, e.g. `emnlp-2024-518` |
-| `pdf_url`       | url    | Direct PDF link                      |
-| `title`         | text   |                                      |
-| `year`          | number |                                      |
-| `venue`         | text   | e.g. `ACL`, `EMNLP`                 |
-| `peer_reviewed` | bool   |                                      |
-
-**Review task fields** (filled in by the reviewing workflow):
+### `papers` collection
 
 | Field             | Type   | Description                                             |
 |-------------------|--------|---------------------------------------------------------|
+| `paper_id`        | text   | Unique kebab ID, e.g. `emnlp-2024-518`                 |
+| `pdf_url`         | url    | Direct PDF link                                         |
+| `title`           | text   |                                                         |
+| `year`            | number |                                                         |
+| `venue`           | text   | e.g. `ACL`, `EMNLP`                                    |
+| `peer_reviewed`   | bool   |                                                         |
 | `code_repos`      | json   | Array of repository URLs                                |
 | `datasets`        | json   | Array of dataset names                                  |
 | `metrics`         | json   | Array of metric names                                   |
 | `status`          | select | `needs_review` · `final` · `flagged` · `rejected`       |
 | `flag_reason`     | text   |                                                         |
 | `rejection_reason`| text   |                                                         |
-| `locked_by`       | text   | User ID of current reviewer; empty = unlocked           |
+| `locked_by`       | text   | User ID of current editor; empty = unlocked             |
 | `locked_at`       | date   | Lock heartbeat timestamp; expiry enforced client-side   |
 
-**`check_papers` collection** (checking workflow, independent of `papers`):
+### `check_papers` collection
 
 | Field                         | Type   | Description                                          |
 |-------------------------------|--------|------------------------------------------------------|
-| `paper_id`                    | text   | Unique kebab ID — same value as in `papers`          |
+| `paper_id`                    | text   | Unique kebab ID, e.g. `emnlp-2024-518`              |
 | `pdf_url`                     | url    | Direct PDF link                                      |
 | `title`                       | text   |                                                      |
 | `year`                        | number |                                                      |
@@ -248,10 +241,8 @@ The `papers` collection stores one shared, canonical record per paper. All revie
 | `is_sign_language_processing` | select | `yes` · `no` · empty = not yet answered              |
 | `status`                      | select | `needs_check` · `checked` · `flagged`                |
 | `flag_reason`                 | text   |                                                      |
-| `locked_by`                   | text   | User ID of current checker; empty = unlocked         |
+| `locked_by`                   | text   | User ID of current editor; empty = unlocked          |
 | `locked_at`                   | date   | Lock heartbeat timestamp; expiry enforced client-side|
-
-Field names in `check_papers` deliberately mirror `papers` (`status`, `locked_by`, `locked_at`, `flag_reason`) so frontend components can work against either collection without field-name mapping. No conflict arises since the collections are independent.
 
 ### API access rules
 
