@@ -34,6 +34,7 @@ except ImportError:
     sys.exit("requests is not installed. Run: pip install requests")
 
 SEED_DEFAULTS = {
+    # review task
     "code_repos": [],
     "datasets": [],
     "metrics": [],
@@ -42,6 +43,13 @@ SEED_DEFAULTS = {
     "rejection_reason": "",
     "locked_by": "",
     "locked_at": None,
+    # checking task
+    "has_empirical_results": "",
+    "is_sign_language_processing": "",
+    "check_status": "needs_check",
+    "check_flag_reason": "",
+    "check_locked_by": "",
+    "check_locked_at": "",
 }
 
 PASSWORD_ALPHABET = string.ascii_letters + string.digits

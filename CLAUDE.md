@@ -15,12 +15,14 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 
 | File | Purpose |
 |------|---------|
-| `pb_migrations/1_create_papers_collection.js` | Collection schema + auth rules, applied automatically on `./pocketbase serve` |
+| `pb_migrations/1_create_papers_collection.js` | Papers collection schema + auth rules, applied automatically on `./pocketbase serve` |
+| `pb_migrations/2_add_checking_fields.js` | Adds 6 checking-task fields; backfills `check_status = needs_check` on existing records |
 | `papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
-| `seed.py` | Idempotent importer (`--reset` to wipe annotations back to seed state) |
+| `seed.py` | Idempotent importer (`--reset` to wipe all annotation fields; `--create-users` for bulk account creation) |
 | `Dockerfile` | Alpine image that downloads the PocketBase binary and copies `pb_migrations/` |
 | `fly.toml` | Fly.io app config — shared-cpu-1x/256 MB, Frankfurt, persistent volume |
 | `.dockerignore` | Excludes `pb_data/`, local binary, and SQLite WAL files from the image |
+| `.github/workflows/ci.yml` | CI: ruff lint/format, py_compile, JSON validation, JS syntax check |
 | `pb_data/` | Runtime data directory — gitignored, created on first serve |
 | `pocketbase` | Binary — gitignored, download instructions in README |
 
@@ -68,14 +70,21 @@ curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/users/records 
 
 ## Data model — `papers` collection
 
-All annotation fields live on one shared record. Key fields:
+All annotation fields live on one shared record. The collection has two independent sets of task fields:
 
-- `paper_id` — unique kebab ID (e.g. `acl-2022.emnlp-main.427`), used for URL routing in the frontend
+**Review task** (`pb_migrations/1_create_papers_collection.js`):
+- `paper_id` — unique kebab ID (e.g. `acl-2022.emnlp-main.427`), used for URL routing
 - `status` — select: `needs_review` | `final` | `flagged` | `rejected`
-- `locked_by` / `locked_at` — optimistic edit lock (see below)
+- `flag_reason`, `rejection_reason` — text
 - `code_repos`, `datasets`, `metrics` — JSON arrays
+- `locked_by` / `locked_at` — review-task optimistic lock (enforced in `updateRule`)
 
-Full field list in `pb_migrations/1_create_papers_collection.js`.
+**Checking task** (`pb_migrations/2_add_checking_fields.js`):
+- `has_empirical_results` — select: `yes` | `no` | empty (not yet answered)
+- `is_sign_language_processing` — select: `yes` | `no` | empty (not yet answered)
+- `check_status` — select: `needs_check` | `checked` | `flagged`
+- `check_flag_reason` — text
+- `check_locked_by` / `check_locked_at` — checking-task lock (client-side only, no server rule)
 
 ## Auth rules
 
@@ -90,10 +99,16 @@ User accounts live in the built-in `users` collection (email + password). Superu
 
 ## Edit locking
 
-- Frontend acquires lock on paper open: `PATCH {locked_by: userId, locked_at: <ISO timestamp>}`
-- Frontend releases lock on save / navigate away: `PATCH {locked_by: "", locked_at: ""}`
-- Frontend sends heartbeat while editing to keep `locked_at` fresh
-- Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no server-side TTL in the PoC
+There are two independent lock sets — a reviewer locking a paper does not block a checker from opening it.
+
+**Review lock** (`locked_by` / `locked_at`) — enforced server-side via the collection's `updateRule`:
+- Acquire: `PATCH {locked_by: userId, locked_at: <ISO timestamp>}`
+- Release: `PATCH {locked_by: "", locked_at: ""}`
+- Heartbeat: `PATCH {locked_at: <ISO timestamp>}` while editing
+
+**Check lock** (`check_locked_by` / `check_locked_at`) — same lifecycle, but no server-side rule; enforcement is client-side only.
+
+Lock expiry (e.g. 30 min after the lock timestamp) is enforced client-side for both locks.
 
 ## PocketBase API quirks (important for frontend integration)
 
@@ -125,7 +140,7 @@ User accounts live in the built-in `users` collection (email + password). Superu
 
 ## Resetting for testing
 
-**Soft reset (PocketBase keeps running)** — resets all annotation fields on every paper back to `needs_review` with empty arrays and no lock:
+**Soft reset (PocketBase keeps running)** — resets all annotation fields on every paper (both review and checking tasks) back to their seed defaults (`needs_review`, `needs_check`, empty arrays, no locks):
 
 ```bash
 # Local
