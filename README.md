@@ -58,17 +58,21 @@ This is the account used to manage collections and to run the seed script.
 python3 -m venv ~/.venvs/repro-sign-survey-backend   # only needed once
 source ~/.venvs/repro-sign-survey-backend/bin/activate
 pip install requests                                   # only needed once
+```
 
-# Seed the review collection (67 papers)
+The repo includes toy data that can be used to seed the database (`papers.json` and `check_papers.json`), for testing:
+
+```bash
+# Seed the toy review collection (`papers.json`, 67 papers)
 python3 seed.py --email admin@example.com --password yourpassword
 
-# Seed the checking collection (56 papers)
+# Seed the toy checking collection (`check_papers.json`, 56 papers)
 python3 seed.py --email admin@example.com --password yourpassword --collection check_papers
 ```
 
 The two collections are independent — not all papers appear in both. Running either command again is safe; it skips records that already exist.
 
-To import from a custom JSON file (same `{papers: [...]}` format):
+To import from a custom JSON file with real paper data (same `{papers: [...]}` format):
 
 ```bash
 python3 seed.py --email admin@example.com --password yourpassword --data /path/to/data.json
