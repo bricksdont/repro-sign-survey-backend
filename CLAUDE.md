@@ -110,6 +110,8 @@ There are two independent lock sets — a reviewer locking a paper does not bloc
 
 Lock expiry (e.g. 30 min after the lock timestamp) is enforced client-side for both locks.
 
+**Why the check lock is client-side only:** PocketBase has a single `updateRule` per collection. Extending it to enforce both locks simultaneously would require something like `(locked_by = "" || locked_by = @request.auth.id) && (check_locked_by = "" || check_locked_by = @request.auth.id)`, which would block a reviewer from saving if a checker holds the check lock — defeating the purpose of independent locks. Since the two tasks edit non-overlapping fields, client-side enforcement is sufficient for the PoC.
+
 ## PocketBase API quirks (important for frontend integration)
 
 - **Unauthenticated list** returns `HTTP 200` with empty `items`, not `401`. The `listRule` is a row filter, not a gate.
