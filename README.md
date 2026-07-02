@@ -96,7 +96,7 @@ python3 seed.py --email admin@example.com --password yourpassword --collection c
 # Get a superuser token
 SUPERTOKEN=$(curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/_superusers/auth-with-password \
   -H 'Content-Type: application/json' \
-  -d '{"identity":"me@x.com","password":"yourpassword"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+  -d '{"identity":"admin@example.com","password":"yourpassword"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
 
 # Create a reviewer account
 curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/users/records \
