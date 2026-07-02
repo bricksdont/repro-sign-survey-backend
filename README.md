@@ -107,6 +107,24 @@ curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/users/records 
 
 Reviewers authenticate with email and password via the frontend.
 
+**Bulk creation via seed.py** — for creating multiple accounts at once, use the `--create-users` flag. It generates a random 16-character password for each address and prints the credentials:
+
+```bash
+source ~/.venvs/repro-sign-survey-backend/bin/activate
+python3 seed.py --email admin@example.com --password yourpassword \
+  --create-users reviewer1@example.com reviewer2@example.com reviewer3@example.com
+```
+
+To save credentials to a CSV file instead of just printing them:
+
+```bash
+python3 seed.py --email admin@example.com --password yourpassword \
+  --create-users reviewer1@example.com reviewer2@example.com \
+  --credentials-out creds.csv
+```
+
+Works against the local instance by default; add `--pb-url https://repro-sign-survey.fly.dev` for the remote.
+
 ---
 
 ## Deploying to Fly.io
