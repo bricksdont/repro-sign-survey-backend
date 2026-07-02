@@ -2,7 +2,7 @@
 
 PocketBase backend for the Sign Language Processing reproducibility survey. Provides a shared database and REST API so multiple reviewers can annotate papers simultaneously.
 
-The frontend lives in [repro-sign-survey-ui](https://github.com/bricksdont/repro-sign-survey-ui). This repo handles data persistence only; the frontend will be wired to this API in a separate step.
+The frontend lives in [repro-sign-survey-ui](https://github.com/bricksdont/repro-sign-survey-ui) (PocketBase integration in progress on the `feature/pocketbase-backend` branch there). This repo handles data persistence only.
 
 ## Quick start
 
@@ -39,7 +39,7 @@ unzip pb.zip pocketbase && rm pb.zip && chmod +x pocketbase
 ./pocketbase serve
 ```
 
-On first run this creates `pb_data/` (database + files) and automatically applies all migrations in `pb_migrations/`, including the `papers` collection schema. The server listens on port **8090**.
+On first run this creates `pb_data/` (database + files) and automatically applies all migrations in `pb_migrations/`, creating both the `papers` and `check_papers` collections. The server listens on port **8090**.
 
 - Admin dashboard: http://localhost:8090/_/
 - REST API: http://localhost:8090/api/
@@ -58,21 +58,32 @@ This is the account used to manage collections and to run the seed script.
 python3 -m venv ~/.venvs/repro-sign-survey-backend   # only needed once
 source ~/.venvs/repro-sign-survey-backend/bin/activate
 pip install requests                                   # only needed once
-python3 seed.py --email admin@example.com --password yourpassword
 ```
 
-This imports the 67 SLP papers in `papers.json` into PocketBase. Running it again is safe — it skips papers that already exist.
+The repo includes toy data that can be used to seed the database (`papers.json` and `check_papers.json`), for testing:
 
-To import from a different JSON file (same `{papers: [...]}` format as the frontend's `data.json`):
+```bash
+# Seed the toy review collection (`papers.json`, 67 papers)
+python3 seed.py --email admin@example.com --password yourpassword
+
+# Seed the toy checking collection (`check_papers.json`, 56 papers)
+python3 seed.py --email admin@example.com --password yourpassword --collection check_papers
+```
+
+The two collections are independent — not all papers appear in both. Running either command again is safe; it skips records that already exist.
+
+To import from a custom JSON file with real paper data (same `{papers: [...]}` format):
 
 ```bash
 python3 seed.py --email admin@example.com --password yourpassword --data /path/to/data.json
+python3 seed.py --email admin@example.com --password yourpassword --collection check_papers --data /path/to/check_papers.json
 ```
 
-**Resetting to seed state** — to wipe all annotations and locks and return every paper to `needs_review` without restarting PocketBase:
+**Resetting to seed state** — wipes all annotations and locks without restarting PocketBase:
 
 ```bash
 python3 seed.py --email admin@example.com --password yourpassword --reset
+python3 seed.py --email admin@example.com --password yourpassword --collection check_papers --reset
 ```
 
 ### 5. Create reviewer accounts
@@ -85,7 +96,7 @@ python3 seed.py --email admin@example.com --password yourpassword --reset
 # Get a superuser token
 SUPERTOKEN=$(curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/_superusers/auth-with-password \
   -H 'Content-Type: application/json' \
-  -d '{"identity":"me@x.com","password":"yourpassword"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+  -d '{"identity":"admin@example.com","password":"yourpassword"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
 
 # Create a reviewer account
 curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/users/records \
@@ -95,6 +106,24 @@ curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/users/records 
 ```
 
 Reviewers authenticate with email and password via the frontend.
+
+**Bulk creation via seed.py** — for creating multiple accounts at once, use the `--create-users` flag. It generates a random 16-character password for each address and prints the credentials:
+
+```bash
+source ~/.venvs/repro-sign-survey-backend/bin/activate
+python3 seed.py --email admin@example.com --password yourpassword \
+  --create-users reviewer1@example.com reviewer2@example.com reviewer3@example.com
+```
+
+To save credentials to a CSV file instead of just printing them:
+
+```bash
+python3 seed.py --email admin@example.com --password yourpassword \
+  --create-users reviewer1@example.com reviewer2@example.com \
+  --credentials-out creds.csv
+```
+
+Works against the local instance by default; add `--pb-url https://repro-sign-survey.fly.dev` for the remote.
 
 ---
 
@@ -141,6 +170,11 @@ python3 seed.py \
   --pb-url https://repro-sign-survey.fly.dev \
   --email me@x.com \
   --password yourpassword
+python3 seed.py \
+  --pb-url https://repro-sign-survey.fly.dev \
+  --email me@x.com \
+  --password yourpassword \
+  --collection check_papers
 ```
 
 ### Redeploying after changes
@@ -159,7 +193,34 @@ python3 seed.py \
   --email me@x.com \
   --password yourpassword \
   --reset
+python3 seed.py \
+  --pb-url https://repro-sign-survey.fly.dev \
+  --email me@x.com \
+  --password yourpassword \
+  --collection check_papers \
+  --reset
 ```
+
+### Backups
+
+**Manual backup (recommended before significant data work):**
+
+1. Open the admin dashboard at **https://repro-sign-survey.fly.dev/_/**
+2. Go to **Settings → Backups** and click **Create new backup**
+3. Download the resulting zip file to your local machine
+
+The zip contains the full SQLite database and can be used to restore the instance. Store it somewhere safe outside Fly.io.
+
+**Automatic Fly.io volume snapshots:**
+
+Fly.io automatically snapshots the persistent volume daily. Snapshots are retained for **5 days** by default (configurable up to 60 days with `--snapshot-retention`). To list available snapshots:
+
+```bash
+flyctl volumes list                              # get volume ID
+flyctl volumes snapshots list <volume-id>
+```
+
+These snapshots are an infrastructure-level safety net, but since they live on Fly.io's infrastructure and are only kept for 5 days, they are not a substitute for periodically downloading a backup zip.
 
 ### Useful commands
 
@@ -176,31 +237,51 @@ flyctl volumes list                  # check persistent volume
 
 ```
 pb_migrations/
-  1_create_papers_collection.js   # collection schema, applied on first serve
-papers.json                       # seed data: 67 SLP papers
-seed.py                           # imports papers.json into PocketBase
+  1_create_papers_collection.js   # papers collection schema + auth rules
+  2_create_check_papers_collection.js  # check_papers collection schema + auth rules
+papers.json                       # seed data: 67 SLP papers (review task)
+check_papers.json                 # seed data: 56 SLP papers (checking task)
+seed.py                           # imports/resets either collection; bulk user creation
+Dockerfile                        # Alpine image for Fly.io deployment
+fly.toml                          # Fly.io app config (Frankfurt, persistent volume)
+.github/workflows/ci.yml          # CI: lint, format, JSON validation, JS syntax
 ```
 
 ## Data model
 
-The `papers` collection stores one shared, canonical record per paper. All reviewers edit the same record.
+### `papers` collection
 
-| Field             | Type   | Description                                              |
-|-------------------|--------|----------------------------------------------------------|
-| `paper_id`        | text   | Unique kebab ID, e.g. `emnlp-2024-518`                   |
-| `pdf_url`         | url    | Direct PDF link                                          |
-| `title`           | text   |                                                          |
-| `year`            | number |                                                          |
-| `venue`           | text   | e.g. `ACL`, `EMNLP`                                     |
-| `peer_reviewed`   | bool   |                                                          |
-| `code_repos`      | json   | Array of repository URLs                                 |
-| `datasets`        | json   | Array of dataset names                                   |
-| `metrics`         | json   | Array of metric names                                    |
-| `status`          | select | `needs_review` · `final` · `flagged` · `rejected`        |
-| `flag_reason`     | text   |                                                          |
-| `rejection_reason`| text   |                                                          |
-| `locked_by`       | text   | User ID of current editor; empty = unlocked              |
-| `locked_at`       | date   | When the lock was acquired; used for client-side expiry  |
+| Field             | Type   | Description                                             |
+|-------------------|--------|---------------------------------------------------------|
+| `paper_id`        | text   | Unique kebab ID, e.g. `emnlp-2024-518`                 |
+| `pdf_url`         | url    | Direct PDF link                                         |
+| `title`           | text   |                                                         |
+| `year`            | number |                                                         |
+| `venue`           | text   | e.g. `ACL`, `EMNLP`                                    |
+| `peer_reviewed`   | bool   |                                                         |
+| `code_repos`      | json   | Array of repository URLs                                |
+| `datasets`        | json   | Array of dataset names                                  |
+| `metrics`         | json   | Array of metric names                                   |
+| `status`          | select | `needs_review` · `final` · `flagged` · `rejected`       |
+| `flag_reason`     | text   |                                                         |
+| `rejection_reason`| text   |                                                         |
+| `locked_by`       | text   | User ID of current editor; empty = unlocked             |
+| `locked_at`       | date   | Lock heartbeat timestamp; expiry enforced client-side   |
+
+### `check_papers` collection
+
+| Field                         | Type   | Description                                          |
+|-------------------------------|--------|------------------------------------------------------|
+| `paper_id`                    | text   | Unique kebab ID, e.g. `emnlp-2024-518`              |
+| `pdf_url`                     | url    | Direct PDF link                                      |
+| `title`                       | text   |                                                      |
+| `year`                        | number |                                                      |
+| `has_empirical_results`       | select | `yes` · `no` · empty = not yet answered              |
+| `is_sign_language_processing` | select | `yes` · `no` · empty = not yet answered              |
+| `status`                      | select | `needs_check` · `checked` · `flagged`                |
+| `flag_reason`                 | text   |                                                      |
+| `locked_by`                   | text   | User ID of current editor; empty = unlocked          |
+| `locked_at`                   | date   | Lock heartbeat timestamp; expiry enforced client-side|
 
 ### API access rules
 
@@ -213,13 +294,13 @@ The `papers` collection stores one shared, canonical record per paper. All revie
 
 ### Edit locking
 
-To prevent conflicting edits when multiple reviewers are active, the frontend acquires a lock when a paper detail view is opened and releases it on save or navigation. The lock is enforced at the API level via the `updateRule`:
+Both collections use the same lock fields (`locked_by` / `locked_at`) and an identical server-side `updateRule`:
 
 ```
 locked_by = "" || locked_by = @request.auth.id
 ```
 
-Lock expiry (e.g. 30 minutes after `locked_at`) is checked client-side. A heartbeat keeps `locked_at` fresh while editing is in progress.
+A reviewer locking a record in `papers` has no effect on the same paper's record in `check_papers` — the collections are fully independent. Lock expiry (e.g. 30 minutes after `locked_at`) is checked client-side; a heartbeat keeps the timestamp fresh while editing.
 
 ### PocketBase API quirks
 
