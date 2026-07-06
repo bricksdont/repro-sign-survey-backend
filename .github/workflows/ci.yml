@@ -28,8 +28,11 @@ jobs:
       - name: Syntax check
         run: python3 -m py_compile seed.py
 
-      - name: Validate papers.json
-        run: python3 -m json.tool papers.json > /dev/null
+      - name: Validate JSON files
+        run: |
+          python3 -m json.tool papers.json > /dev/null
+          python3 -m json.tool check_papers.json > /dev/null
 
       - name: JS syntax check
-        run: node --check pb_migrations/1_create_papers_collection.js
+        run: |
+          for f in pb_migrations/*.js; do node --check "$f"; done
