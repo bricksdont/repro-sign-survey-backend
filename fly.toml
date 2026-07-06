@@ -1,4 +1,5 @@
-app = 'repro-sign-survey'
+app = 'repro-sign-survey-backend'
+org = 'repro-sign'
 primary_region = 'fra'
 
 [build]

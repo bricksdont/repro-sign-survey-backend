@@ -29,10 +29,10 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 
 ## Deployed instance
 
-Live at **https://repro-sign-survey.fly.dev** (Frankfurt, auto-stops when idle).
+Live at **https://repro-sign-survey-backend.fly.dev** (Frankfurt, auto-stops when idle).
 
-- Admin dashboard: https://repro-sign-survey.fly.dev/_/
-- API: https://repro-sign-survey.fly.dev/api/
+- Admin dashboard: https://repro-sign-survey-backend.fly.dev/_/
+- API: https://repro-sign-survey-backend.fly.dev/api/
 
 Redeploy after changes: `flyctl deploy`
 
@@ -60,11 +60,11 @@ python3 seed.py --email me@x.com --password password --collection check_papers
 **On Fly.io** — the PocketBase CLI has no command for regular users (only superusers). Use the API:
 
 ```bash
-SUPERTOKEN=$(curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/_superusers/auth-with-password \
+SUPERTOKEN=$(curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/_superusers/auth-with-password \
   -H 'Content-Type: application/json' \
   -d '{"identity":"me@x.com","password":"yourpassword"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
 
-curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/users/records \
+curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/records \
   -H "Authorization: Bearer $SUPERTOKEN" \
   -H 'Content-Type: application/json' \
   -d '{"email":"reviewer@example.com","password":"pass","passwordConfirm":"pass"}'
@@ -155,9 +155,9 @@ python3 seed.py --email me@x.com --password <superuser-password> --reset
 python3 seed.py --email me@x.com --password <superuser-password> --collection check_papers --reset
 
 # Remote
-python3 seed.py --pb-url https://repro-sign-survey.fly.dev \
+python3 seed.py --pb-url https://repro-sign-survey-backend.fly.dev \
   --email me@x.com --password <superuser-password> --reset
-python3 seed.py --pb-url https://repro-sign-survey.fly.dev \
+python3 seed.py --pb-url https://repro-sign-survey-backend.fly.dev \
   --email me@x.com --password <superuser-password> --collection check_papers --reset
 ```
 

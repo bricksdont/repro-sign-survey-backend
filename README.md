@@ -94,12 +94,12 @@ python3 seed.py --email admin@example.com --password yourpassword --collection c
 
 ```bash
 # Get a superuser token
-SUPERTOKEN=$(curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/_superusers/auth-with-password \
+SUPERTOKEN=$(curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/_superusers/auth-with-password \
   -H 'Content-Type: application/json' \
   -d '{"identity":"admin@example.com","password":"yourpassword"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
 
 # Create a reviewer account
-curl -s -X POST https://repro-sign-survey.fly.dev/api/collections/users/records \
+curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/records \
   -H "Authorization: Bearer $SUPERTOKEN" \
   -H 'Content-Type: application/json' \
   -d '{"email":"reviewer@example.com","password":"reviewerpassword","passwordConfirm":"reviewerpassword"}'
@@ -123,13 +123,13 @@ python3 seed.py --email admin@example.com --password yourpassword \
   --credentials-out creds.csv
 ```
 
-Works against the local instance by default; add `--pb-url https://repro-sign-survey.fly.dev` for the remote.
+Works against the local instance by default; add `--pb-url https://repro-sign-survey-backend.fly.dev` for the remote.
 
 ---
 
 ## Deploying to Fly.io
 
-The app is deployed at **https://repro-sign-survey.fly.dev** (Frankfurt region, shared-cpu-1x / 256 MB, auto-stops when idle).
+The app is deployed at **https://repro-sign-survey-backend.fly.dev** (Frankfurt region, shared-cpu-1x / 256 MB, auto-stops when idle).
 
 ### First-time setup
 
@@ -160,18 +160,18 @@ flyctl ssh console --command "/pb/pocketbase superuser create me@x.com yourpassw
 ```
 
 The superuser account gives access to the **admin dashboard** at:
-**https://repro-sign-survey.fly.dev/_/**
+**https://repro-sign-survey-backend.fly.dev/_/**
 Log in there with the superuser email and password to inspect collections, records, and schema.
 
 **5. Seed the remote database**
 ```bash
 source ~/.venvs/repro-sign-survey-backend/bin/activate
 python3 seed.py \
-  --pb-url https://repro-sign-survey.fly.dev \
+  --pb-url https://repro-sign-survey-backend.fly.dev \
   --email me@x.com \
   --password yourpassword
 python3 seed.py \
-  --pb-url https://repro-sign-survey.fly.dev \
+  --pb-url https://repro-sign-survey-backend.fly.dev \
   --email me@x.com \
   --password yourpassword \
   --collection check_papers
@@ -189,12 +189,12 @@ Migrations in `pb_migrations/` are applied automatically on startup. The volume 
 
 ```bash
 python3 seed.py \
-  --pb-url https://repro-sign-survey.fly.dev \
+  --pb-url https://repro-sign-survey-backend.fly.dev \
   --email me@x.com \
   --password yourpassword \
   --reset
 python3 seed.py \
-  --pb-url https://repro-sign-survey.fly.dev \
+  --pb-url https://repro-sign-survey-backend.fly.dev \
   --email me@x.com \
   --password yourpassword \
   --collection check_papers \
@@ -205,7 +205,7 @@ python3 seed.py \
 
 **Manual backup (recommended before significant data work):**
 
-1. Open the admin dashboard at **https://repro-sign-survey.fly.dev/_/**
+1. Open the admin dashboard at **https://repro-sign-survey-backend.fly.dev/_/**
 2. Go to **Settings → Backups** and click **Create new backup**
 3. Download the resulting zip file to your local machine
 
