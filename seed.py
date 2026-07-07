@@ -43,7 +43,8 @@ except ImportError:
 # exhaust the local ephemeral port range (seen as "Can't assign requested
 # address" / errno 49 on macOS).
 
-import time 
+import time
+
 starting_time = time.time()
 
 SESSION = requests.Session()
@@ -123,9 +124,7 @@ def generate_password() -> str:
 
 def authenticate(base_url: str, email: str, password: str) -> str:
     url = f"{base_url}/api/collections/_superusers/auth-with-password"
-    resp = SESSION.post(
-        url, json={"identity": email, "password": password}, timeout=10
-    )
+    resp = SESSION.post(url, json={"identity": email, "password": password}, timeout=10)
     if resp.status_code != 200:
         sys.exit(f"Authentication failed ({resp.status_code}): {resp.text}")
     token = resp.json().get("token")
