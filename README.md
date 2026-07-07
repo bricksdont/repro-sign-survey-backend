@@ -39,7 +39,7 @@ unzip pb.zip pocketbase && rm pb.zip && chmod +x pocketbase
 ./pocketbase serve
 ```
 
-On first run this creates `pb_data/` (database + files) and automatically applies all migrations in `pb_migrations/`, creating both the `papers` and `check_papers` collections. The server listens on port **8090**.
+On first run this creates `pb_data/` (database + files) and automatically applies all migrations in `pb_migrations/`, creating the `papers`, `check_papers`, and `datasets` collections. The server listens on port **8090**.
 
 - Admin dashboard: http://localhost:8090/_/
 - REST API: http://localhost:8090/api/
@@ -60,17 +60,20 @@ source ~/.venvs/repro-sign-survey-backend/bin/activate
 pip install requests                                   # only needed once
 ```
 
-The repo includes toy data that can be used to seed the database (`papers.json` and `check_papers.json`), for testing:
+The repo includes toy data for local testing:
 
 ```bash
-# Seed the toy review collection (`papers.json`, 67 papers)
+# Seed the review collection (papers.json, 67 papers)
 python3 seed.py --email admin@example.com --password yourpassword
 
-# Seed the toy checking collection (`check_papers.json`, 56 papers)
+# Seed the checking collection (check_papers.json, 56 papers)
 python3 seed.py --email admin@example.com --password yourpassword --collection check_papers
+
+# Seed the dataset catalog (datasets.json, 7 datasets — for testing only)
+python3 seed.py --email admin@example.com --password yourpassword --collection datasets
 ```
 
-The two collections are independent — not all papers appear in both. Running either command again is safe; it skips records that already exist.
+The three collections are independent. Running any seed command again is safe; it skips records that already exist. In production, populate `datasets` manually via the admin UI rather than seeding from a file.
 
 To import from a custom JSON file with real paper data (same `{papers: [...]}` format):
 
@@ -84,6 +87,7 @@ python3 seed.py --email admin@example.com --password yourpassword --collection c
 ```bash
 python3 seed.py --email admin@example.com --password yourpassword --reset
 python3 seed.py --email admin@example.com --password yourpassword --collection check_papers --reset
+python3 seed.py --email admin@example.com --password yourpassword --collection datasets --reset
 ```
 
 ### 5. Create reviewer accounts
@@ -254,11 +258,14 @@ flyctl volumes list                  # check persistent volume
 
 ```
 pb_migrations/
-  1_create_papers_collection.js   # papers collection schema + auth rules
+  1_create_papers_collection.js        # papers collection schema + auth rules
   2_create_check_papers_collection.js  # check_papers collection schema + auth rules
+  3_create_datasets_collection.js      # datasets collection schema + auth rules
+  4_update_papers_datasets_field.js    # changes papers.datasets from JSON to Relation
 papers.json                       # seed data: 67 SLP papers (review task)
 check_papers.json                 # seed data: 56 SLP papers (checking task)
-seed.py                           # imports/resets either collection; bulk user creation
+datasets.json                     # seed data: 7 SLP datasets (local testing only)
+seed.py                           # imports/resets papers, check_papers, or datasets; bulk user creation
 Dockerfile                        # Alpine image for Fly.io deployment
 fly.toml                          # Fly.io app config (Frankfurt, persistent volume)
 .github/workflows/ci.yml          # CI: lint, format, JSON validation, JS syntax
@@ -276,9 +283,9 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `year`            | number |                                                         |
 | `venue`           | text   | e.g. `ACL`, `EMNLP`                                    |
 | `peer_reviewed`   | bool   |                                                         |
-| `code_repos`      | json   | Array of repository URLs                                |
-| `datasets`        | json   | Array of dataset names                                  |
-| `metrics`         | json   | Array of metric names                                   |
+| `code_repos`      | json     | Array of repository URLs                                |
+| `datasets`        | relation | Links to records in the `datasets` collection (multi)   |
+| `metrics`         | json     | Array of metric names                                   |
 | `status`          | select | `needs_review` · `final` · `flagged` · `rejected`       |
 | `flag_reason`     | text   |                                                         |
 | `rejection_reason`| text   |                                                         |
@@ -299,6 +306,18 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `flag_reason`                 | text   |                                                      |
 | `locked_by`                   | text   | User ID of current editor; empty = unlocked          |
 | `locked_at`                   | date   | Lock heartbeat timestamp; expiry enforced client-side|
+
+### `datasets` collection
+
+| Field       | Type   | Description                                              |
+|-------------|--------|----------------------------------------------------------|
+| `name`      | text   | Unique dataset name                                      |
+| `license`   | text   | e.g. `CC BY-SA 4.0`                                     |
+| `url`       | json   | Array of URLs                                            |
+| `available` | select | `yes` · `no` · empty = not yet answered                  |
+| `comments`  | text   |                                                          |
+| `locked_by` | text   | User ID of current editor; empty = unlocked              |
+| `locked_at` | date   | Lock heartbeat timestamp; expiry enforced client-side    |
 
 ### API access rules
 
@@ -338,9 +357,9 @@ curl -s -X POST http://localhost:8090/api/collections/users/auth-with-password \
 curl http://localhost:8090/api/collections/papers/records?perPage=500 \
   -H 'Authorization: Bearer <token>'
 
-# Update a paper
+# Update a paper (datasets must be PocketBase record IDs from the datasets collection)
 curl -X PATCH http://localhost:8090/api/collections/papers/records/<record-id> \
   -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json' \
-  -d '{"status":"final","datasets":["RWTH-PHOENIX-Weather-2014T"]}'
+  -d '{"status":"final","datasets":["<dataset-record-id>"]}'
 ```
