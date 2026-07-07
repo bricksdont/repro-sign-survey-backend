@@ -68,11 +68,30 @@ SEED_DEFAULTS = {
         "locked_by": "",
         "locked_at": "",
     },
+    "datasets": {
+        "available": "",
+        "locked_by": "",
+        "locked_at": "",
+    },
 }
 
-PAPER_FIELDS = {
+# Bibliographic/catalog fields to copy from the seed JSON file per collection.
+RECORD_FIELDS = {
     "papers": ["paper_id", "pdf_url", "title", "year", "venue", "peer_reviewed"],
     "check_papers": ["paper_id", "pdf_url", "title", "year"],
+    "datasets": ["name", "license", "url", "comments"],
+}
+
+# API field used to check record existence, and the matching key in the seed JSON.
+UNIQUE_FIELD = {
+    "papers": "paper_id",
+    "check_papers": "paper_id",
+    "datasets": "name",
+}
+UNIQUE_JSON_KEY = {
+    "papers": "id",
+    "check_papers": "id",
+    "datasets": "name",
 }
 
 PASSWORD_ALPHABET = string.ascii_letters + string.digits
@@ -153,15 +172,18 @@ def fetch_all_records(base_url: str, headers: dict, collection: str) -> list:
     return records
 
 
-def existing_paper_ids(base_url: str, headers: dict, collection: str) -> set:
+def existing_unique_values(base_url: str, headers: dict, collection: str) -> set:
     records = fetch_all_records(base_url, headers, collection)
-    return {r["paper_id"] for r in records}
+    field = UNIQUE_FIELD[collection]
+    return {r[field] for r in records}
 
 
-def create_record(base_url: str, headers: dict, collection: str, paper: dict) -> bool:
+def create_record(base_url: str, headers: dict, collection: str, item: dict) -> bool:
     defaults = SEED_DEFAULTS[collection]
-    bib_fields = PAPER_FIELDS[collection]
-    payload = {f: paper.get("id" if f == "paper_id" else f) for f in bib_fields}
+    bib_fields = RECORD_FIELDS[collection]
+    unique_api = UNIQUE_FIELD[collection]
+    unique_json = UNIQUE_JSON_KEY[collection]
+    payload = {f: item.get(unique_json if f == unique_api else f) for f in bib_fields}
     payload = {k: v for k, v in payload.items() if v is not None}
     payload.update({k: v for k, v in defaults.items() if v is not None})
 
@@ -171,7 +193,7 @@ def create_record(base_url: str, headers: dict, collection: str, paper: dict) ->
         json=payload,
         timeout=10,
     )
-    return resp.status_code == 200
+    return resp.status_code in (200, 201)
 
 
 def reset_record(base_url: str, headers: dict, collection: str, pb_id: str) -> bool:
@@ -189,26 +211,30 @@ def reset_record(base_url: str, headers: dict, collection: str, pb_id: str) -> b
 def cmd_seed(base_url: str, headers: dict, collection: str, data_path: Path):
     with open(data_path) as f:
         data = json.load(f)
-    papers = data.get("papers", [])
-    if not papers:
-        sys.exit("No papers found in data file.")
-    print(f"Loaded {len(papers)} papers from {data_path}")
+    # Try collection name as top-level key first; fall back to "papers" for
+    # existing files (papers.json, check_papers.json) that use that key.
+    items = data.get(collection, data.get("papers", []))
+    if not items:
+        sys.exit("No records found in data file.")
+    print(f"Loaded {len(items)} records from {data_path}")
 
-    print("Fetching existing paper_ids...")
-    existing = existing_paper_ids(base_url, headers, collection)
+    unique_json = UNIQUE_JSON_KEY[collection]
+    unique_field = UNIQUE_FIELD[collection]
+    print(f"Fetching existing {unique_field}s...")
+    existing = existing_unique_values(base_url, headers, collection)
     print(f"Found {len(existing)} existing records")
 
     created = skipped = errors = 0
-    for paper in papers:
-        pid = paper.get("id", "?")
-        if pid in existing:
-            print(f"  SKIP  {pid}")
+    for item in items:
+        uid = item.get(unique_json, "?")
+        if uid in existing:
+            print(f"  SKIP  {uid}")
             skipped += 1
-        elif create_record(base_url, headers, collection, paper):
-            print(f"  OK    {pid}")
+        elif create_record(base_url, headers, collection, item):
+            print(f"  OK    {uid}")
             created += 1
         else:
-            print(f"  ERROR {pid}")
+            print(f"  ERROR {uid}")
             errors += 1
 
     print(f"\nDone: {created} created, {skipped} skipped, {errors} errors")
@@ -220,13 +246,15 @@ def cmd_reset(base_url: str, headers: dict, collection: str):
     records = fetch_all_records(base_url, headers, collection)
     print(f"Resetting {len(records)} records in '{collection}' to seed state...")
 
+    unique_field = UNIQUE_FIELD[collection]
     ok = failed = 0
     for r in records:
+        label = r.get(unique_field, r["id"])
         if reset_record(base_url, headers, collection, r["id"]):
-            print(f"  RESET {r['paper_id']}")
+            print(f"  RESET {label}")
             ok += 1
         else:
-            print(f"  ERROR {r['paper_id']}")
+            print(f"  ERROR {label}")
             failed += 1
 
     print(f"\nDone: {ok} reset, {failed} errors")

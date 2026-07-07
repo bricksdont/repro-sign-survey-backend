@@ -1,0 +1,53 @@
+{
+  "datasets": [
+    {
+      "name": "PHOENIX-2014",
+      "license": "CC BY-SA 3.0",
+      "url": ["https://www-i6.informatik.rwth-aachen.de/~koller/RWTH-PHOENIX/"],
+      "available": "yes",
+      "comments": "German Sign Language continuous recognition, weather domain"
+    },
+    {
+      "name": "PHOENIX-2014-T",
+      "license": "CC BY-SA 3.0",
+      "url": ["https://www-i6.informatik.rwth-aachen.de/~koller/RWTH-PHOENIX-2014-T/"],
+      "available": "yes",
+      "comments": "Extension of PHOENIX-2014 with German translation annotations"
+    },
+    {
+      "name": "How2Sign",
+      "license": "Custom (research only)",
+      "url": ["https://how2sign.github.io/"],
+      "available": "yes",
+      "comments": "American Sign Language instructional video dataset"
+    },
+    {
+      "name": "BOBSL",
+      "license": "Custom (research only)",
+      "url": ["https://www.robots.ox.ac.uk/~vgg/data/bobsl/"],
+      "available": "yes",
+      "comments": "British Sign Language sentences from BBC programmes"
+    },
+    {
+      "name": "WLASL",
+      "license": "Custom (research only)",
+      "url": ["https://dxli94.github.io/WLASL/"],
+      "available": "yes",
+      "comments": "Word-Level American Sign Language, 2000 glosses"
+    },
+    {
+      "name": "DGS Corpus",
+      "license": "CC BY-SA 4.0",
+      "url": ["https://www.sign-lang.uni-hamburg.de/dgs-korpus/"],
+      "available": "yes",
+      "comments": "German Sign Language naturalistic corpus"
+    },
+    {
+      "name": "OpenASL",
+      "license": "CC BY 4.0",
+      "url": ["https://github.com/chevalierNoir/OpenASL"],
+      "available": "yes",
+      "comments": "Weakly supervised ASL dataset from interpreted TV content"
+    }
+  ]
+}
