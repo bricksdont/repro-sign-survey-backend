@@ -129,9 +129,9 @@ Works against the local instance by default; add `--pb-url https://repro-sign-su
 
 ## Load test
 
-To check how `seed.py` performs at scale beyond the 67-paper toy dataset:
+To check how the backend performs at scale beyond the 67-paper toy dataset:
 
-1. Build a larger `{papers: [...]}` JSON file in the same format (e.g. extend `papers.json` to thousands of entries).
+1. Build a larger `{papers: [...]}` JSON file in the same format (e.g. extend `papers.json` with `test/duplicate_papers.py` to thousands of entries).
 2. Delete all existing records in the target collection (via the admin dashboard, or the API) so you're seeding into an empty collection.
 3. Time the import:
    ```bash
