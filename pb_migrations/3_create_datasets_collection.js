@@ -52,7 +52,7 @@ migrate((app) => {
     ],
     listRule: "@request.auth.id != \"\"",
     viewRule: "@request.auth.id != \"\"",
-    createRule: "",
+    createRule: "@request.auth.id != \"\"",
     updateRule: "locked_by = \"\" || locked_by = @request.auth.id",
     deleteRule: "",
   });

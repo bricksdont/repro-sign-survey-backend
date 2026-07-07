@@ -321,12 +321,12 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 
 ### API access rules
 
-| Operation | Who can do it                                         |
-|-----------|-------------------------------------------------------|
-| List/View | Any authenticated user                                |
-| Create    | Superuser only (seeding and admin tasks)              |
-| Update    | Any authenticated user **who holds the lock** (or if unlocked) |
-| Delete    | Superuser only                                        |
+| Operation | `papers` / `check_papers`                              | `datasets`              |
+|-----------|--------------------------------------------------------|-------------------------|
+| List/View | Any authenticated user                                 | same                    |
+| Create    | Superuser only                                         | Any authenticated user  |
+| Update    | Any authenticated user **who holds the lock** (or if unlocked) | same          |
+| Delete    | Superuser only                                         | same                    |
 
 ### Edit locking
 
