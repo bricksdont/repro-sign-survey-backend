@@ -30,7 +30,6 @@ import json
 import secrets
 import string
 import sys
-import urllib.parse
 from pathlib import Path
 from typing import Optional
 
@@ -38,6 +37,17 @@ try:
     import requests
 except ImportError:
     sys.exit("requests is not installed. Run: pip install requests")
+
+# Shared session: reuses keep-alive TCP connections instead of opening a new
+# one per request. With thousands of records, per-request connections can
+# exhaust the local ephemeral port range (seen as "Can't assign requested
+# address" / errno 49 on macOS).
+
+import time
+
+starting_time = time.time()
+
+SESSION = requests.Session()
 
 SEED_DEFAULTS = {
     "papers": {
@@ -114,9 +124,7 @@ def generate_password() -> str:
 
 def authenticate(base_url: str, email: str, password: str) -> str:
     url = f"{base_url}/api/collections/_superusers/auth-with-password"
-    resp = requests.post(
-        url, json={"identity": email, "password": password}, timeout=10
-    )
+    resp = SESSION.post(url, json={"identity": email, "password": password}, timeout=10)
     if resp.status_code != 200:
         sys.exit(f"Authentication failed ({resp.status_code}): {resp.text}")
     token = resp.json().get("token")
@@ -130,7 +138,7 @@ def fetch_all_records(base_url: str, headers: dict, collection: str) -> list:
     records = []
     page = 1
     while True:
-        resp = requests.get(
+        resp = SESSION.get(
             f"{base_url}/api/collections/{collection}/records?perPage=500&page={page}",
             headers=headers,
             timeout=10,
@@ -145,13 +153,9 @@ def fetch_all_records(base_url: str, headers: dict, collection: str) -> list:
     return records
 
 
-def paper_exists(base_url: str, headers: dict, collection: str, paper_id: str) -> bool:
-    encoded = urllib.parse.quote(f'(paper_id="{paper_id}")')
-    url = f"{base_url}/api/collections/{collection}/records?filter={encoded}&perPage=1"
-    resp = requests.get(url, headers=headers, timeout=10)
-    if resp.status_code != 200:
-        return False
-    return resp.json().get("totalItems", 0) > 0
+def existing_paper_ids(base_url: str, headers: dict, collection: str) -> set:
+    records = fetch_all_records(base_url, headers, collection)
+    return {r["paper_id"] for r in records}
 
 
 def create_record(base_url: str, headers: dict, collection: str, paper: dict) -> bool:
@@ -161,7 +165,7 @@ def create_record(base_url: str, headers: dict, collection: str, paper: dict) ->
     payload = {k: v for k, v in payload.items() if v is not None}
     payload.update({k: v for k, v in defaults.items() if v is not None})
 
-    resp = requests.post(
+    resp = SESSION.post(
         f"{base_url}/api/collections/{collection}/records",
         headers=headers,
         json=payload,
@@ -173,7 +177,7 @@ def create_record(base_url: str, headers: dict, collection: str, paper: dict) ->
 def reset_record(base_url: str, headers: dict, collection: str, pb_id: str) -> bool:
     defaults = SEED_DEFAULTS[collection]
     payload = {k: v for k, v in defaults.items() if v is not None}
-    resp = requests.patch(
+    resp = SESSION.patch(
         f"{base_url}/api/collections/{collection}/records/{pb_id}",
         headers=headers,
         json=payload,
@@ -190,10 +194,14 @@ def cmd_seed(base_url: str, headers: dict, collection: str, data_path: Path):
         sys.exit("No papers found in data file.")
     print(f"Loaded {len(papers)} papers from {data_path}")
 
+    print("Fetching existing paper_ids...")
+    existing = existing_paper_ids(base_url, headers, collection)
+    print(f"Found {len(existing)} existing records")
+
     created = skipped = errors = 0
     for paper in papers:
         pid = paper.get("id", "?")
-        if paper_exists(base_url, headers, collection, pid):
+        if pid in existing:
             print(f"  SKIP  {pid}")
             skipped += 1
         elif create_record(base_url, headers, collection, paper):
@@ -235,7 +243,7 @@ def cmd_create_users(
     ok = failed = 0
     for user_email in emails:
         pw = generate_password()
-        resp = requests.post(
+        resp = SESSION.post(
             f"{base_url}/api/collections/users/records",
             headers=headers,
             json={"email": user_email, "password": pw, "passwordConfirm": pw},
@@ -287,3 +295,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    ending_time = time.time()
+    execution_time = ending_time - starting_time
+    print(f"\nExecution time: {execution_time:.2f} seconds")

@@ -127,6 +127,23 @@ Works against the local instance by default; add `--pb-url https://repro-sign-su
 
 ---
 
+## Load test
+
+To check how `seed.py` performs at scale beyond the 67-paper toy dataset:
+
+1. Build a larger `{papers: [...]}` JSON file in the same format (e.g. extend `papers.json` to thousands of entries).
+2. Delete all existing records in the target collection (via the admin dashboard, or the API) so you're seeding into an empty collection.
+3. Time the import:
+   ```bash
+   time python3 seed.py --email admin@example.com --password yourpassword --data many_papers.json
+   ```
+
+**Current results:** seeding 15,000 papers into a fresh, empty `papers` collection on the local instance completed in **~11 seconds** with **0 errors**.
+
+Note: an earlier attempt crashed partway through with `Can't assign requested address` — opening a new TCP connection per HTTP request exhausted the local ephemeral port range. `seed.py` now uses a shared `requests.Session()` (connection pooling) and fetches existing `paper_id`s once up front instead of per record, which resolved the crash and produced the results above.
+
+---
+
 ## Deploying to Fly.io
 
 The app is deployed at **https://repro-sign-survey-backend.fly.dev** (Frankfurt region, shared-cpu-1x / 256 MB, auto-stops when idle).
