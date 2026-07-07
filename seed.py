@@ -42,6 +42,10 @@ except ImportError:
 # one per request. With thousands of records, per-request connections can
 # exhaust the local ephemeral port range (seen as "Can't assign requested
 # address" / errno 49 on macOS).
+
+import time 
+starting_time = time.time()
+
 SESSION = requests.Session()
 
 SEED_DEFAULTS = {
@@ -292,3 +296,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    ending_time = time.time()
+    execution_time = ending_time - starting_time
+    print(f"\nExecution time: {execution_time:.2f} seconds")
