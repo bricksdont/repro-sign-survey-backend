@@ -7,7 +7,7 @@ migrate((app) => {
   papersCollection.fields.add(new RelationField({
     name: "datasets",
     collectionId: datasetsCollection.id,
-    maxSelect: null,
+    maxSelect: 0,
   }));
 
   app.save(papersCollection);
