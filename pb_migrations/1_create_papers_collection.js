@@ -92,9 +92,9 @@ migrate((app) => {
     ],
     listRule: "@request.auth.id != \"\"",
     viewRule: "@request.auth.id != \"\"",
-    createRule: "",
+    createRule: null,
     updateRule: "locked_by = \"\" || locked_by = @request.auth.id",
-    deleteRule: ""
+    deleteRule: null
   });
 
   app.save(collection);
