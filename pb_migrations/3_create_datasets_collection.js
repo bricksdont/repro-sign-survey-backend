@@ -54,7 +54,7 @@ migrate((app) => {
     viewRule: "@request.auth.id != \"\"",
     createRule: "@request.auth.id != \"\"",
     updateRule: "locked_by = \"\" || locked_by = @request.auth.id",
-    deleteRule: "",
+    deleteRule: null,
   });
 
   app.save(collection);

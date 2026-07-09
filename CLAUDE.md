@@ -106,9 +106,9 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 | Operation | `papers` / `check_papers` | `datasets` |
 |-----------|---------------------------|------------|
 | List / View | `@request.auth.id != ""` — any authenticated user | same |
-| Create | `""` — superuser only | `@request.auth.id != ""` — any authenticated user |
+| Create | `null` — superuser only | `@request.auth.id != ""` — any authenticated user |
 | Update | `locked_by = "" \|\| locked_by = @request.auth.id` | same |
-| Delete | `""` — superuser only | same |
+| Delete | `null` — superuser only | same |
 
 User accounts live in the built-in `users` collection (email + password). Superusers are a separate `_superusers` collection.
 
