@@ -250,6 +250,7 @@ def cmd_seed(base_url: str, headers: dict, collection: str, data_path: Path):
     print(f"\nDone: {created} created, {skipped} skipped, {errors} errors")
     if errors:
         sys.exit(1)
+    return created, skipped, errors
 
 
 def cmd_reset(base_url: str, headers: dict, collection: str):
@@ -270,6 +271,7 @@ def cmd_reset(base_url: str, headers: dict, collection: str):
     print(f"\nDone: {ok} reset, {failed} errors")
     if failed:
         sys.exit(1)
+    return ok, failed
 
 
 def cmd_create_users(
@@ -323,11 +325,30 @@ def main():
     if collection == "all":
         if args.data:
             sys.exit("--data cannot be used with --collection all")
+        summary = {}
         for col in ALL_COLLECTIONS:
+            print(f"\n{'=' * 50}")
+            print(f"Collection: {col}")
+            print(f"{'=' * 50}")
             if args.reset:
-                cmd_reset(base_url, headers, col)
+                ok, failed = cmd_reset(base_url, headers, col)
+                summary[col] = (ok, failed)
             else:
-                cmd_seed(base_url, headers, col, Path(__file__).parent / f"{col}.json")
+                created, skipped, errors = cmd_seed(
+                    base_url, headers, col, Path(__file__).parent / f"{col}.json"
+                )
+                summary[col] = (created, skipped, errors)
+        print(f"\n{'=' * 50}")
+        print("Summary")
+        print(f"{'=' * 50}")
+        if args.reset:
+            for col, (ok, failed) in summary.items():
+                print(f"  {col:<15}  {ok} reset, {failed} errors")
+        else:
+            for col, (created, skipped, errors) in summary.items():
+                print(
+                    f"  {col:<15}  {created} created, {skipped} skipped, {errors} errors"
+                )
     elif args.reset:
         cmd_reset(base_url, headers, collection)
     else:
