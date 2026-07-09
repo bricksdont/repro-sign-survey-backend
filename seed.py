@@ -126,7 +126,7 @@ def parse_args():
     p.add_argument(
         "--data",
         default=None,
-        help="Path to JSON file with {papers: [...]} (default: <collection>.json next to this script)",
+        help="Path to JSON file with seed records (default: seed_data/<collection>.json)",
     )
     p.add_argument(
         "--reset",
@@ -335,7 +335,10 @@ def main():
                 summary[col] = (ok, failed)
             else:
                 created, skipped, errors = cmd_seed(
-                    base_url, headers, col, Path(__file__).parent / f"{col}.json"
+                    base_url,
+                    headers,
+                    col,
+                    Path(__file__).parent / "seed_data" / f"{col}.json",
                 )
                 summary[col] = (created, skipped, errors)
         print(f"\n{'=' * 50}")
@@ -355,7 +358,7 @@ def main():
         data_path = (
             Path(args.data)
             if args.data
-            else Path(__file__).parent / f"{collection}.json"
+            else Path(__file__).parent / "seed_data" / f"{collection}.json"
         )
         cmd_seed(base_url, headers, collection, data_path)
 

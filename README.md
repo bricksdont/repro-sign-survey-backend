@@ -264,10 +264,11 @@ pb_migrations/
   4_update_papers_datasets_field.js    # changes papers.datasets from JSON to Relation
   5_create_metrics_collection.js       # metrics collection schema + auth rules
   6_update_papers_metrics_field.js     # changes papers.metrics from JSON to Relation
-papers.json                       # seed data: 67 SLP papers (review task)
-check_papers.json                 # seed data: 56 SLP papers (checking task)
-datasets.json                     # seed data: 7 SLP datasets (local testing only)
-metrics.json                      # seed data: 16 SLP evaluation metrics
+seed_data/
+  papers.json                     # seed data: 67 SLP papers (review task)
+  check_papers.json               # seed data: 56 SLP papers (checking task)
+  datasets.json                   # seed data: 7 SLP datasets (local testing only)
+  metrics.json                    # seed data: 16 SLP evaluation metrics
 seed.py                           # imports/resets any collection or all; bulk user creation
 Dockerfile                        # Alpine image for Fly.io deployment
 fly.toml                          # Fly.io app config (Frankfurt, persistent volume)

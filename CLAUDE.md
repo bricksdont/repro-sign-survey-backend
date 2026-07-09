@@ -21,10 +21,10 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 | `pb_migrations/4_update_papers_datasets_field.js` | Changes `papers.datasets` from a JSON field to a Relation pointing at `datasets` |
 | `pb_migrations/5_create_metrics_collection.js` | `metrics` collection schema + auth rules |
 | `pb_migrations/6_update_papers_metrics_field.js` | Changes `papers.metrics` from a JSON field to a Relation pointing at `metrics` |
-| `papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
-| `check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
-| `datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
-| `metrics.json` | 16 SLP evaluation metrics for local testing |
+| `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
+| `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
+| `seed_data/datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
+| `seed_data/metrics.json` | 16 SLP evaluation metrics for local testing |
 | `seed.py` | Idempotent importer; `--collection` targets any collection or `all`; `--reset` resets annotation fields; `--create-users` for bulk account creation |
 | `Dockerfile` | Alpine image that downloads the PocketBase binary and copies `pb_migrations/` |
 | `fly.toml` | Fly.io app config — shared-cpu-1x/256 MB, Frankfurt, persistent volume |
@@ -146,7 +146,7 @@ Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no 
 
 ## Seed data
 
-`papers.json` has 67 papers. To add more, append entries in the same format and re-run `seed.py` (it skips existing `paper_id`s). The `datasets` field is left empty on seed; reviewers populate it by linking to `datasets` collection records during annotation.
+`seed_data/papers.json` has 67 papers. To add more, append entries in the same format and re-run `seed.py` (it skips existing `paper_id`s). The `datasets` field is left empty on seed; reviewers populate it by linking to `datasets` collection records during annotation.
 
 ```json
 {
@@ -161,7 +161,7 @@ Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no 
 }
 ```
 
-`datasets.json` has 7 SLP datasets and `metrics.json` has 16 evaluation metrics, both for local testing. Seed all collections at once with `--collection all`. In production, populate `datasets` and `metrics` manually via the admin UI rather than seeding from files.
+`seed_data/datasets.json` has 7 SLP datasets and `seed_data/metrics.json` has 16 evaluation metrics, both for local testing. Seed all collections at once with `--collection all`. In production, populate `datasets` and `metrics` manually via the admin UI rather than seeding from files.
 
 ## Resetting for testing
 
