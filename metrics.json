@@ -1,0 +1,20 @@
+{
+  "metrics": [
+    {"name": "BLEU", "comments": ""},
+    {"name": "BLEU-1", "comments": ""},
+    {"name": "BLEU-2", "comments": ""},
+    {"name": "BLEU-3", "comments": ""},
+    {"name": "BLEU-4", "comments": ""},
+    {"name": "WER", "comments": ""},
+    {"name": "ROUGE", "comments": ""},
+    {"name": "Accuracy", "comments": ""},
+    {"name": "BLEURT", "comments": ""},
+    {"name": "F1", "comments": ""},
+    {"name": "DTW-MJE", "comments": ""},
+    {"name": "chrF", "comments": ""},
+    {"name": "IoU", "comments": ""},
+    {"name": "Precision", "comments": ""},
+    {"name": "Recall", "comments": ""},
+    {"name": "TER", "comments": ""}
+  ]
+}

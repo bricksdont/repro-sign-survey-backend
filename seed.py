@@ -73,6 +73,10 @@ SEED_DEFAULTS = {
         "locked_by": "",
         "locked_at": "",
     },
+    "metrics": {
+        "locked_by": "",
+        "locked_at": "",
+    },
 }
 
 # Bibliographic/catalog fields to copy from the seed JSON file per collection.
@@ -80,6 +84,7 @@ RECORD_FIELDS = {
     "papers": ["paper_id", "pdf_url", "title", "year", "venue", "peer_reviewed"],
     "check_papers": ["paper_id", "pdf_url", "title", "year"],
     "datasets": ["name", "license", "url", "comments"],
+    "metrics": ["name", "comments"],
 }
 
 # API field used to check record existence, and the matching key in the seed JSON.
@@ -87,12 +92,17 @@ UNIQUE_FIELD = {
     "papers": "paper_id",
     "check_papers": "paper_id",
     "datasets": "name",
+    "metrics": "name",
 }
 UNIQUE_JSON_KEY = {
     "papers": "id",
     "check_papers": "id",
     "datasets": "name",
+    "metrics": "name",
 }
+
+# Order used by --collection all: reference catalogs first, then paper collections.
+ALL_COLLECTIONS = ["datasets", "metrics", "papers", "check_papers"]
 
 PASSWORD_ALPHABET = string.ascii_letters + string.digits
 PASSWORD_LENGTH = 16
@@ -110,8 +120,8 @@ def parse_args():
     p.add_argument(
         "--collection",
         default="papers",
-        choices=list(SEED_DEFAULTS.keys()),
-        help="Collection to seed or reset (default: papers)",
+        choices=list(SEED_DEFAULTS.keys()) + ["all"],
+        help="Collection to seed or reset (default: papers); 'all' processes all collections in dependency order",
     )
     p.add_argument(
         "--data",
@@ -310,7 +320,15 @@ def main():
         return
 
     collection = args.collection
-    if args.reset:
+    if collection == "all":
+        if args.data:
+            sys.exit("--data cannot be used with --collection all")
+        for col in ALL_COLLECTIONS:
+            if args.reset:
+                cmd_reset(base_url, headers, col)
+            else:
+                cmd_seed(base_url, headers, col, Path(__file__).parent / f"{col}.json")
+    elif args.reset:
         cmd_reset(base_url, headers, collection)
     else:
         data_path = (
