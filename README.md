@@ -328,6 +328,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | Field       | Type   | Description                                              |
 |-------------|--------|----------------------------------------------------------|
 | `name`      | text   | Unique metric name (e.g. `BLEU`, `WER`)                 |
+| `url`       | json   | Array of URLs (e.g. paper or documentation links)        |
 | `comments`  | text   |                                                          |
 | `locked_by` | text   | User ID of current editor; empty = unlocked              |
 | `locked_at` | date   | Lock heartbeat timestamp; expiry enforced client-side    |
