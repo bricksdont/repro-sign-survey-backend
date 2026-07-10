@@ -1,20 +1,20 @@
 {
   "metrics": [
-    {"name": "BLEU", "comments": ""},
-    {"name": "BLEU-1", "comments": ""},
-    {"name": "BLEU-2", "comments": ""},
-    {"name": "BLEU-3", "comments": ""},
-    {"name": "BLEU-4", "comments": ""},
-    {"name": "WER", "comments": ""},
-    {"name": "ROUGE", "comments": ""},
-    {"name": "Accuracy", "comments": ""},
-    {"name": "BLEURT", "comments": ""},
-    {"name": "F1", "comments": ""},
-    {"name": "DTW-MJE", "comments": ""},
-    {"name": "chrF", "comments": ""},
-    {"name": "IoU", "comments": ""},
-    {"name": "Precision", "comments": ""},
-    {"name": "Recall", "comments": ""},
-    {"name": "TER", "comments": ""}
+    {"name": "BLEU", "url": [], "comments": ""},
+    {"name": "BLEU-1", "url": [], "comments": ""},
+    {"name": "BLEU-2", "url": [], "comments": ""},
+    {"name": "BLEU-3", "url": [], "comments": ""},
+    {"name": "BLEU-4", "url": [], "comments": ""},
+    {"name": "WER", "url": [], "comments": ""},
+    {"name": "ROUGE", "url": [], "comments": ""},
+    {"name": "Accuracy", "url": [], "comments": ""},
+    {"name": "BLEURT", "url": [], "comments": ""},
+    {"name": "F1", "url": [], "comments": ""},
+    {"name": "DTW-MJE", "url": [], "comments": ""},
+    {"name": "chrF", "url": [], "comments": ""},
+    {"name": "IoU", "url": [], "comments": ""},
+    {"name": "Precision", "url": [], "comments": ""},
+    {"name": "Recall", "url": [], "comments": ""},
+    {"name": "TER", "url": [], "comments": ""}
   ]
 }

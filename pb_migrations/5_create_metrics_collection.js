@@ -12,6 +12,11 @@ migrate((app) => {
         max: 200,
       },
       {
+        name: "url",
+        type: "json",
+        required: false,
+      },
+      {
         name: "comments",
         type: "text",
         required: false,

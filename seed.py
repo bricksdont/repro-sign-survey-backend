@@ -84,7 +84,7 @@ RECORD_FIELDS = {
     "papers": ["paper_id", "pdf_url", "title", "year", "venue", "peer_reviewed"],
     "check_papers": ["paper_id", "pdf_url", "title", "year"],
     "datasets": ["name", "license", "url", "comments"],
-    "metrics": ["name", "comments"],
+    "metrics": ["name", "url", "comments"],
 }
 
 # API field used to check record existence, and the matching key in the seed JSON.

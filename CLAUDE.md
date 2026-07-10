@@ -105,6 +105,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 
 **Metric catalog** — `metrics` collection (`pb_migrations/5_create_metrics_collection.js`):
 - `name` — unique metric name; used as the unique key for seeding
+- `url` — JSON array of URLs (e.g. paper or documentation links)
 - `comments` — text
 - `locked_by` / `locked_at` — optimistic lock
 
