@@ -32,6 +32,7 @@ jobs:
         run: |
           python3 -m json.tool papers.json > /dev/null
           python3 -m json.tool check_papers.json > /dev/null
+          python3 -m json.tool datasets.json > /dev/null
 
       - name: JS syntax check
         run: |

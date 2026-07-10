@@ -1,60 +1,39 @@
 /// <reference path="../pb_data/types.d.ts" />
 migrate((app) => {
   const collection = new Collection({
-    name: "check_papers",
+    name: "datasets",
     type: "base",
     fields: [
       {
-        name: "paper_id",
+        name: "name",
         type: "text",
         required: true,
         min: 1,
+        max: 500,
+      },
+      {
+        name: "license",
+        type: "text",
+        required: false,
         max: 200,
       },
       {
-        name: "pdf_url",
-        type: "url",
+        name: "url",
+        type: "json",
         required: false,
       },
       {
-        name: "title",
+        name: "available",
+        type: "select",
+        required: false,
+        maxSelect: 1,
+        values: ["yes", "no"],
+      },
+      {
+        name: "comments",
         type: "text",
         required: false,
         max: 1000,
-      },
-      {
-        name: "year",
-        type: "number",
-        required: false,
-        min: 1900,
-        max: 2100,
-      },
-      {
-        name: "has_empirical_results",
-        type: "select",
-        required: false,
-        maxSelect: 1,
-        values: ["yes", "no"],
-      },
-      {
-        name: "is_sign_language_processing",
-        type: "select",
-        required: false,
-        maxSelect: 1,
-        values: ["yes", "no"],
-      },
-      {
-        name: "status",
-        type: "select",
-        required: false,
-        maxSelect: 1,
-        values: ["needs_check", "checked", "flagged"],
-      },
-      {
-        name: "flag_reason",
-        type: "text",
-        required: false,
-        max: 500,
       },
       {
         name: "locked_by",
@@ -69,17 +48,17 @@ migrate((app) => {
       },
     ],
     indexes: [
-      "CREATE UNIQUE INDEX idx_check_papers_paper_id ON check_papers (paper_id)",
+      "CREATE UNIQUE INDEX idx_datasets_name ON datasets (name)",
     ],
     listRule: "@request.auth.id != \"\"",
     viewRule: "@request.auth.id != \"\"",
-    createRule: null,
+    createRule: "@request.auth.id != \"\"",
     updateRule: "locked_by = \"\" || locked_by = @request.auth.id",
     deleteRule: null,
   });
 
   app.save(collection);
 }, (app) => {
-  const collection = app.findCollectionByNameOrId("check_papers");
+  const collection = app.findCollectionByNameOrId("datasets");
   app.delete(collection);
 });
