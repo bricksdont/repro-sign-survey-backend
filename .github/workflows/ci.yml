@@ -30,9 +30,10 @@ jobs:
 
       - name: Validate JSON files
         run: |
-          python3 -m json.tool papers.json > /dev/null
-          python3 -m json.tool check_papers.json > /dev/null
-          python3 -m json.tool datasets.json > /dev/null
+          python3 -m json.tool seed_data/papers.json > /dev/null
+          python3 -m json.tool seed_data/check_papers.json > /dev/null
+          python3 -m json.tool seed_data/datasets.json > /dev/null
+          python3 -m json.tool seed_data/metrics.json > /dev/null
 
       - name: JS syntax check
         run: |

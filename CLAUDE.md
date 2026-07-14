@@ -19,10 +19,13 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 | `pb_migrations/2_create_check_papers_collection.js` | `check_papers` collection schema + auth rules |
 | `pb_migrations/3_create_datasets_collection.js` | `datasets` collection schema + auth rules |
 | `pb_migrations/4_update_papers_datasets_field.js` | Changes `papers.datasets` from a JSON field to a Relation pointing at `datasets` |
-| `papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
-| `check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
-| `datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
-| `seed.py` | Idempotent importer; `--collection` targets `papers`, `check_papers`, or `datasets`; `--reset` resets annotation fields; `--create-users` for bulk account creation |
+| `pb_migrations/5_create_metrics_collection.js` | `metrics` collection schema + auth rules |
+| `pb_migrations/6_update_papers_metrics_field.js` | Changes `papers.metrics` from a JSON field to a Relation pointing at `metrics` |
+| `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
+| `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
+| `seed_data/datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
+| `seed_data/metrics.json` | 16 SLP evaluation metrics for local testing |
+| `seed.py` | Idempotent importer; `--collection` targets any collection or `all`; `--reset` resets annotation fields; `--create-users` for bulk account creation |
 | `Dockerfile` | Alpine image that downloads the PocketBase binary and copies `pb_migrations/` |
 | `fly.toml` | Fly.io app config — shared-cpu-1x/256 MB, Frankfurt, persistent volume |
 | `.dockerignore` | Excludes `pb_data/`, local binary, and SQLite WAL files from the image |
@@ -52,9 +55,7 @@ First-time setup:
 ```bash
 ./pocketbase superuser create me@x.com password
 source ~/.venvs/repro-sign-survey-backend/bin/activate
-python3 seed.py --email me@x.com --password password
-python3 seed.py --email me@x.com --password password --collection check_papers
-python3 seed.py --email me@x.com --password password --collection datasets
+python3 seed.py --email me@x.com --password password --collection all
 ```
 
 ## Creating reviewer accounts
@@ -76,13 +77,14 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 
 ## Data model
 
-**Review task** — `papers` collection (`pb_migrations/1_create_papers_collection.js` + `4_update_papers_datasets_field.js`):
+**Review task** — `papers` collection (migrations 1, 4, 6):
 - `paper_id` — unique kebab ID (e.g. `acl-2022.emnlp-main.427`), used for URL routing
 - `pdf_url`, `title`, `year`, `venue`, `peer_reviewed` — bibliographic fields
 - `status` — select: `needs_review` | `final` | `flagged` | `rejected`
 - `flag_reason`, `rejection_reason` — text
-- `code_repos`, `metrics` — JSON arrays
+- `code_repos` — JSON array
 - `datasets` — **Relation** (multi-select) pointing at the `datasets` collection
+- `metrics` — **Relation** (multi-select) pointing at the `metrics` collection
 - `locked_by` / `locked_at` — optimistic lock (enforced in `updateRule`)
 
 **Checking task** — `check_papers` collection (`pb_migrations/2_create_check_papers_collection.js`):
@@ -101,10 +103,16 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `comments` — text
 - `locked_by` / `locked_at` — optimistic lock (same pattern as other collections)
 
+**Metric catalog** — `metrics` collection (`pb_migrations/5_create_metrics_collection.js`):
+- `name` — unique metric name; used as the unique key for seeding
+- `url` — JSON array of URLs (e.g. paper or documentation links)
+- `comments` — text
+- `locked_by` / `locked_at` — optimistic lock
+
 ## Auth rules
 
-| Operation | `papers` / `check_papers` | `datasets` |
-|-----------|---------------------------|------------|
+| Operation | `papers` / `check_papers` | `datasets` / `metrics` |
+|-----------|---------------------------|------------------------|
 | List / View | `@request.auth.id != ""` — any authenticated user | same |
 | Create | `null` — superuser only | `@request.auth.id != ""` — any authenticated user |
 | Update | `locked_by = "" \|\| locked_by = @request.auth.id` | same |
@@ -114,7 +122,7 @@ User accounts live in the built-in `users` collection (email + password). Superu
 
 ## Edit locking
 
-All three collections (`papers`, `check_papers`, `datasets`) use the same lock field names (`locked_by` / `locked_at`) and an identical `updateRule`:
+All four collections (`papers`, `check_papers`, `datasets`, `metrics`) use the same lock field names (`locked_by` / `locked_at`) and an identical `updateRule`:
 
 ```
 locked_by = "" || locked_by = @request.auth.id
@@ -125,7 +133,7 @@ Lock lifecycle (same for both collections):
 - Release: `PATCH {locked_by: "", locked_at: ""}`
 - Heartbeat: `PATCH {locked_at: <ISO timestamp>}` while editing
 
-Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no server-side TTL in the PoC. The collections are independent; a lock in `papers` has no effect on the same paper's record in `check_papers` or on any record in `datasets`.
+Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no server-side TTL in the PoC. The collections are independent; a lock in `papers` has no effect on records in any other collection.
 
 ## PocketBase API quirks (important for frontend integration)
 
@@ -133,13 +141,13 @@ Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no 
 - **Update blocked by lock** returns `HTTP 404`, not `403`. PocketBase treats rule-blocked records as non-existent.
 - **Record IDs** — PocketBase assigns opaque 15-char IDs (e.g. `xscyqaugyl1plkz`). Use `paper_id` for URL routing; use the PocketBase `id` for API calls.
 - **Superuser auth** endpoint: `POST /api/collections/_superusers/auth-with-password` (different from regular user auth at `/api/collections/users/auth-with-password`).
-- **JSON fields** (`code_repos`, `metrics`) must be sent as actual JSON arrays, not strings.
-- **Relation fields** (`papers.datasets`) must be sent as an array of PocketBase record IDs (the opaque 15-char `id` of each `datasets` record), not names or strings.
+- **JSON fields** (`code_repos`) must be sent as actual JSON arrays, not strings.
+- **Relation fields** (`papers.datasets`, `papers.metrics`) must be sent as an array of PocketBase record IDs (the opaque 15-char `id` of each related record), not names or strings.
 - **Clearing date fields** — send `""` (empty string), not `null`. Applies to `locked_at`.
 
 ## Seed data
 
-`papers.json` has 67 papers. To add more, append entries in the same format and re-run `seed.py` (it skips existing `paper_id`s). The `datasets` field is left empty on seed; reviewers populate it by linking to `datasets` collection records during annotation.
+`seed_data/papers.json` has 67 papers. To add more, append entries in the same format and re-run `seed.py` (it skips existing `paper_id`s). The `datasets` field is left empty on seed; reviewers populate it by linking to `datasets` collection records during annotation.
 
 ```json
 {
@@ -154,7 +162,7 @@ Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no 
 }
 ```
 
-`datasets.json` has 7 SLP datasets for local testing. Seed it with `--collection datasets`. In production, populate the `datasets` collection manually via the admin UI rather than seeding from a file.
+`seed_data/datasets.json` has 7 SLP datasets and `seed_data/metrics.json` has 16 evaluation metrics, both for local testing. Seed all collections at once with `--collection all`. In production, populate `datasets` and `metrics` manually via the admin UI rather than seeding from files.
 
 ## Resetting for testing
 
@@ -164,17 +172,11 @@ Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no 
 source ~/.venvs/repro-sign-survey-backend/bin/activate
 
 # Local
-python3 seed.py --email me@x.com --password <superuser-password> --reset
-python3 seed.py --email me@x.com --password <superuser-password> --collection check_papers --reset
-python3 seed.py --email me@x.com --password <superuser-password> --collection datasets --reset
+python3 seed.py --email me@x.com --password <superuser-password> --collection all --reset
 
 # Remote
 python3 seed.py --pb-url https://repro-sign-survey-backend.fly.dev \
-  --email me@x.com --password <superuser-password> --reset
-python3 seed.py --pb-url https://repro-sign-survey-backend.fly.dev \
-  --email me@x.com --password <superuser-password> --collection check_papers --reset
-python3 seed.py --pb-url https://repro-sign-survey-backend.fly.dev \
-  --email me@x.com --password <superuser-password> --collection datasets --reset
+  --email me@x.com --password <superuser-password> --collection all --reset
 ```
 
 **Hard reset (truly clean slate, local only)** — restores the exact post-seed DB state. Requires a restart:

@@ -39,7 +39,7 @@ unzip pb.zip pocketbase && rm pb.zip && chmod +x pocketbase
 ./pocketbase serve
 ```
 
-On first run this creates `pb_data/` (database + files) and automatically applies all migrations in `pb_migrations/`, creating the `papers`, `check_papers`, and `datasets` collections. The server listens on port **8090**.
+On first run this creates `pb_data/` (database + files) and automatically applies all migrations in `pb_migrations/`, creating the `papers`, `check_papers`, `datasets`, and `metrics` collections. The server listens on port **8090**.
 
 - Admin dashboard: http://localhost:8090/_/
 - REST API: http://localhost:8090/api/
@@ -60,20 +60,22 @@ source ~/.venvs/repro-sign-survey-backend/bin/activate
 pip install requests                                   # only needed once
 ```
 
-The repo includes toy data for local testing:
+The repo includes toy data for local testing. Seed all four collections in one command:
 
 ```bash
-# Seed the review collection (papers.json, 67 papers)
-python3 seed.py --email admin@example.com --password yourpassword
-
-# Seed the checking collection (check_papers.json, 56 papers)
-python3 seed.py --email admin@example.com --password yourpassword --collection check_papers
-
-# Seed the dataset catalog (datasets.json, 7 datasets — for testing only)
-python3 seed.py --email admin@example.com --password yourpassword --collection datasets
+python3 seed.py --email admin@example.com --password yourpassword --collection all
 ```
 
-The three collections are independent. Running any seed command again is safe; it skips records that already exist. In production, populate `datasets` manually via the admin UI rather than seeding from a file.
+Or target a specific collection:
+
+```bash
+python3 seed.py --email admin@example.com --password yourpassword                            # papers (default)
+python3 seed.py --email admin@example.com --password yourpassword --collection check_papers
+python3 seed.py --email admin@example.com --password yourpassword --collection datasets
+python3 seed.py --email admin@example.com --password yourpassword --collection metrics
+```
+
+Running any command again is safe; it skips records that already exist. In production, populate `datasets` and `metrics` manually via the admin UI rather than seeding from files.
 
 To import from a custom JSON file with real paper data (same `{papers: [...]}` format):
 
@@ -85,9 +87,7 @@ python3 seed.py --email admin@example.com --password yourpassword --collection c
 **Resetting to seed state** — wipes all annotations and locks without restarting PocketBase:
 
 ```bash
-python3 seed.py --email admin@example.com --password yourpassword --reset
-python3 seed.py --email admin@example.com --password yourpassword --collection check_papers --reset
-python3 seed.py --email admin@example.com --password yourpassword --collection datasets --reset
+python3 seed.py --email admin@example.com --password yourpassword --collection all --reset
 ```
 
 ### 5. Create reviewer accounts
@@ -262,10 +262,14 @@ pb_migrations/
   2_create_check_papers_collection.js  # check_papers collection schema + auth rules
   3_create_datasets_collection.js      # datasets collection schema + auth rules
   4_update_papers_datasets_field.js    # changes papers.datasets from JSON to Relation
-papers.json                       # seed data: 67 SLP papers (review task)
-check_papers.json                 # seed data: 56 SLP papers (checking task)
-datasets.json                     # seed data: 7 SLP datasets (local testing only)
-seed.py                           # imports/resets papers, check_papers, or datasets; bulk user creation
+  5_create_metrics_collection.js       # metrics collection schema + auth rules
+  6_update_papers_metrics_field.js     # changes papers.metrics from JSON to Relation
+seed_data/
+  papers.json                     # seed data: 67 SLP papers (review task)
+  check_papers.json               # seed data: 56 SLP papers (checking task)
+  datasets.json                   # seed data: 7 SLP datasets (local testing only)
+  metrics.json                    # seed data: 16 SLP evaluation metrics
+seed.py                           # imports/resets any collection or all; bulk user creation
 Dockerfile                        # Alpine image for Fly.io deployment
 fly.toml                          # Fly.io app config (Frankfurt, persistent volume)
 .github/workflows/ci.yml          # CI: lint, format, JSON validation, JS syntax
@@ -285,7 +289,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `peer_reviewed`   | bool   |                                                         |
 | `code_repos`      | json     | Array of repository URLs                                |
 | `datasets`        | relation | Links to records in the `datasets` collection (multi)   |
-| `metrics`         | json     | Array of metric names                                   |
+| `metrics`         | relation | Links to records in the `metrics` collection (multi)    |
 | `status`          | select | `needs_review` · `final` · `flagged` · `rejected`       |
 | `flag_reason`     | text   |                                                         |
 | `rejection_reason`| text   |                                                         |
@@ -319,9 +323,19 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `locked_by` | text   | User ID of current editor; empty = unlocked              |
 | `locked_at` | date   | Lock heartbeat timestamp; expiry enforced client-side    |
 
+### `metrics` collection
+
+| Field       | Type   | Description                                              |
+|-------------|--------|----------------------------------------------------------|
+| `name`      | text   | Unique metric name (e.g. `BLEU`, `WER`)                 |
+| `url`       | json   | Array of URLs (e.g. paper or documentation links)        |
+| `comments`  | text   |                                                          |
+| `locked_by` | text   | User ID of current editor; empty = unlocked              |
+| `locked_at` | date   | Lock heartbeat timestamp; expiry enforced client-side    |
+
 ### API access rules
 
-| Operation | `papers` / `check_papers`                              | `datasets`              |
+| Operation | `papers` / `check_papers`                              | `datasets` / `metrics`  |
 |-----------|--------------------------------------------------------|-------------------------|
 | List/View | Any authenticated user                                 | same                    |
 | Create    | Superuser only                                         | Any authenticated user  |
@@ -330,13 +344,13 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 
 ### Edit locking
 
-Both collections use the same lock fields (`locked_by` / `locked_at`) and an identical server-side `updateRule`:
+All four collections use the same lock fields (`locked_by` / `locked_at`) and an identical server-side `updateRule`:
 
 ```
 locked_by = "" || locked_by = @request.auth.id
 ```
 
-A reviewer locking a record in `papers` has no effect on the same paper's record in `check_papers` — the collections are fully independent. Lock expiry (e.g. 30 minutes after `locked_at`) is checked client-side; a heartbeat keeps the timestamp fresh while editing.
+Collections are fully independent — a lock in `papers` has no effect on records in any other collection. Lock expiry (e.g. 30 minutes after `locked_at`) is checked client-side; a heartbeat keeps the timestamp fresh while editing.
 
 ### PocketBase API quirks
 
@@ -357,7 +371,7 @@ curl -s -X POST http://localhost:8090/api/collections/users/auth-with-password \
 curl http://localhost:8090/api/collections/papers/records?perPage=500 \
   -H 'Authorization: Bearer <token>'
 
-# Update a paper (datasets must be PocketBase record IDs from the datasets collection)
+# Update a paper (datasets and metrics must be PocketBase record IDs from their respective collections)
 curl -X PATCH http://localhost:8090/api/collections/papers/records/<record-id> \
   -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json' \
