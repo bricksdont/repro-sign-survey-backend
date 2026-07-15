@@ -10,7 +10,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2020.conll-1.51",
@@ -22,7 +28,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2020.signlang-1.29",
@@ -34,7 +46,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-L16-1220",
@@ -46,7 +64,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2020.signlang-1.14",
@@ -58,7 +82,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.signlang-1.11",
@@ -70,7 +100,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-L18-1666",
@@ -82,7 +118,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-Y08-1002",
@@ -94,7 +136,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.signlang-1.24",
@@ -106,7 +154,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2021.mtsummit-at4ssl.11",
@@ -118,7 +172,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "arxiv-2011-09846",
@@ -130,7 +190,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "arxiv-2007-12530",
@@ -142,7 +208,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "arxiv-2110-06161",
@@ -154,7 +226,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.acl-long.150",
@@ -166,7 +244,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2023.eacl-main.200",
@@ -178,7 +262,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.acl-short.49",
@@ -190,7 +280,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2021.acl-long.570",
@@ -202,7 +298,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.sltat-1.18",
@@ -214,7 +316,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2023.findings-eacl.127",
@@ -226,7 +334,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2021.mtsummit-at4ssl.1",
@@ -238,7 +352,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2020.signlang-1.15",
@@ -250,7 +370,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2020.coling-main.525",
@@ -262,7 +388,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.sltat-1.15",
@@ -274,7 +406,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "arxiv-2202-03086",
@@ -286,7 +424,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.wmt-1.71",
@@ -298,7 +442,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.emnlp-main.427",
@@ -310,7 +460,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2020.signlang-1.25",
@@ -322,7 +478,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2020.signlang-1.10",
@@ -334,7 +496,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.sltat-1.10",
@@ -346,7 +514,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.sltat-1.19",
@@ -358,7 +532,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2021.bucc-1.4",
@@ -370,7 +550,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2023.at4ssl-1.3",
@@ -382,7 +568,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2023.acl-short.60",
@@ -394,7 +586,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2023.findings-emnlp.846",
@@ -406,7 +604,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2023.findings-acl.665",
@@ -418,7 +622,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.signlang-1.15",
@@ -430,7 +640,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.lrec-main.1289",
@@ -442,7 +658,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2022.sltat-1.9",
@@ -454,7 +676,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2020.signlang-1.30",
@@ -466,7 +694,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.3",
@@ -478,7 +712,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.4",
@@ -490,7 +730,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.5",
@@ -502,7 +748,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.6",
@@ -514,7 +766,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.10",
@@ -526,7 +784,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.12",
@@ -538,7 +802,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.13",
@@ -550,7 +820,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.42",
@@ -562,7 +838,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.44",
@@ -574,7 +856,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.2",
@@ -586,7 +874,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.18",
@@ -598,7 +892,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.24",
@@ -610,7 +910,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.32",
@@ -622,7 +928,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.40",
@@ -634,7 +946,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.45",
@@ -646,7 +964,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.36",
@@ -658,7 +982,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.29",
@@ -670,7 +1000,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.8",
@@ -682,7 +1018,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.9",
@@ -694,7 +1036,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.19",
@@ -706,7 +1054,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.39",
@@ -718,7 +1072,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.38",
@@ -730,7 +1090,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.23",
@@ -742,7 +1108,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.16",
@@ -754,7 +1126,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.25",
@@ -766,7 +1144,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "acl-2024.signlang-1.30",
@@ -778,7 +1162,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "emnlp-2024-518",
@@ -793,7 +1183,13 @@
         "ASLG-PC12"
       ],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     },
     {
       "id": "openreview-M80WgiO2Lb",
@@ -805,7 +1201,13 @@
       "code_repos": [],
       "datasets": [],
       "metrics": [],
-      "status": "needs_review"
+      "status": "needs_review",
+      "area_of_slp": [],
+      "main_experiment_has_ranking": "",
+      "what_to_reproduce": "",
+      "compute_requirements": "",
+      "textual_conclusion": "",
+      "includes_human_evaluation": ""
     }
   ]
 }

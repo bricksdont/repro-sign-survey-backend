@@ -264,6 +264,7 @@ pb_migrations/
   4_update_papers_datasets_field.js    # changes papers.datasets from JSON to Relation
   5_create_metrics_collection.js       # metrics collection schema + auth rules
   6_update_papers_metrics_field.js     # changes papers.metrics from JSON to Relation
+  8_add_reviewing_fields.js            # adds area_of_slp, ranking, reproduction, conclusion fields to papers
 seed_data/
   papers.json                     # seed data: 67 SLP papers (review task)
   check_papers.json               # seed data: 56 SLP papers (checking task)
@@ -290,6 +291,12 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `code_repos`      | json     | Array of repository URLs                                |
 | `datasets`        | relation | Links to records in the `datasets` collection (multi)   |
 | `metrics`         | relation | Links to records in the `metrics` collection (multi)    |
+| `area_of_slp`     | select | Multi-value; Translation · Recognition · Segmentation / tokenization · Alignment · Signing detection · Generation / production · Unsupervised / representation learning · Spotting / glossing · Transcription · Language identification · Retrieval · Avatar systems |
+| `main_experiment_has_ranking` | select | `yes` · `no` · empty = not yet answered |
+| `what_to_reproduce` | text | Pointer to the table(s)/figure(s) that team R has to reproduce |
+| `compute_requirements` | text | Optional; empty if not specified in the paper |
+| `textual_conclusion` | text | Main conclusion copy-pasted from the paper |
+| `includes_human_evaluation` | select | `yes` · `no` · empty = not yet answered |
 | `status`          | select | `needs_review` · `final` · `flagged` · `rejected`       |
 | `flag_reason`     | text   |                                                         |
 | `rejection_reason`| text   |                                                         |

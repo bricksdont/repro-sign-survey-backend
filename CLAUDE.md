@@ -21,6 +21,7 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 | `pb_migrations/4_update_papers_datasets_field.js` | Changes `papers.datasets` from a JSON field to a Relation pointing at `datasets` |
 | `pb_migrations/5_create_metrics_collection.js` | `metrics` collection schema + auth rules |
 | `pb_migrations/6_update_papers_metrics_field.js` | Changes `papers.metrics` from a JSON field to a Relation pointing at `metrics` |
+| `pb_migrations/8_add_reviewing_fields.js` | Adds `area_of_slp`, `main_experiment_has_ranking`, `what_to_reproduce`, `compute_requirements`, `textual_conclusion`, `includes_human_evaluation` to `papers` |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
@@ -77,7 +78,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 
 ## Data model
 
-**Review task** — `papers` collection (migrations 1, 4, 6):
+**Review task** — `papers` collection (migrations 1, 4, 6, 8):
 - `paper_id` — unique kebab ID (e.g. `acl-2022.emnlp-main.427`), used for URL routing
 - `pdf_url`, `title`, `year`, `venue`, `peer_reviewed` — bibliographic fields
 - `status` — select: `needs_review` | `final` | `flagged` | `rejected`
@@ -85,6 +86,12 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `code_repos` — JSON array
 - `datasets` — **Relation** (multi-select) pointing at the `datasets` collection
 - `metrics` — **Relation** (multi-select) pointing at the `metrics` collection
+- `area_of_slp` — select, multi-value (max 12): `Translation` | `Recognition` | `Segmentation / tokenization` | `Alignment` | `Signing detection` | `Generation / production` | `Unsupervised / representation learning` | `Spotting / glossing` | `Transcription` | `Language identification` | `Retrieval` | `Avatar systems`
+- `main_experiment_has_ranking` — select: `yes` | `no` | empty
+- `what_to_reproduce` — text (pointer to the table(s)/figure(s) that team R has to reproduce)
+- `compute_requirements` — text (optional; empty if not specified in the paper)
+- `textual_conclusion` — text (copy-pasted main conclusion from the paper)
+- `includes_human_evaluation` — select: `yes` | `no` | empty
 - `locked_by` / `locked_at` — optimistic lock (enforced in `updateRule`)
 
 **Checking task** — `check_papers` collection (`pb_migrations/2_create_check_papers_collection.js`):
