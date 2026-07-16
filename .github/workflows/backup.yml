@@ -1,0 +1,41 @@
+name: PocketBase backup
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */2 * * *"   # every 2 hours, at :17 past the hour (UTC)
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pocketbase-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      # The Fly machine sleeps when idle (auto_stop_machines=stop,
+      # min_machines_running=0). An HTTP request wakes it (auto_start_machines=true)
+      # so the Machines API exec below has a running machine to run on.
+      - name: Wake the machine
+        run: >
+          curl -fsS --retry 5 --retry-all-errors --retry-delay 5
+          https://repro-sign-survey-backend.fly.dev/api/health -o /dev/null
+
+      - name: Run backup
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_BACKUP_TOKEN }}
+        run: |
+          set -euo pipefail
+          
+          flyctl machine exec "${{ vars.FLY_MACHINE_ID }}" "/pb/bin/backup" \
+            --app repro-sign-survey-backend --timeout 300 | tee out.log
+          
+          # fly machine exec can exit 0 even when the remote command failed, so
+          # assert the script's end-of-run success marker.
+          grep -q "Backup completed successfully." out.log
