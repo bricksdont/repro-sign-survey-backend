@@ -22,6 +22,7 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 | `pb_migrations/5_create_metrics_collection.js` | `metrics` collection schema + auth rules |
 | `pb_migrations/6_update_papers_metrics_field.js` | Changes `papers.metrics` from a JSON field to a Relation pointing at `metrics` |
 | `pb_migrations/8_add_reviewing_fields.js` | Adds `area_of_slp`, `main_experiment_has_ranking`, `what_to_reproduce`, `compute_requirements`, `textual_conclusion`, `includes_human_evaluation` to `papers` |
+| `pb_migrations/9_add_check_papers_source_fields.js` | Adds `language`, `abstract`, `filters`, `filter_explanations` to `check_papers` |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
@@ -94,8 +95,12 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `includes_human_evaluation` — select: `yes` | `no` | empty
 - `locked_by` / `locked_at` — optimistic lock (enforced in `updateRule`)
 
-**Checking task** — `check_papers` collection (`pb_migrations/2_create_check_papers_collection.js`):
+**Checking task** — `check_papers` collection (migrations 2, 9):
 - `paper_id`, `pdf_url`, `title`, `year` — bibliographic fields (no `venue` or `peer_reviewed`)
+- `language` — text, source language code (e.g. `en`)
+- `abstract` — text, paper abstract
+- `filters` — JSON object of automated eligibility checks (e.g. `{"year": true, "language": true, "abstract": true, "area": true, "approach": true}`)
+- `filter_explanations` — JSON object of free-text rationale per filter (e.g. `area`, `approach`)
 - `has_empirical_results` — select: `yes` | `no` | empty (not yet answered)
 - `is_sign_language_processing` — select: `yes` | `no` | empty (not yet answered)
 - `status` — select: `needs_check` | `checked` | `flagged`

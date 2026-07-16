@@ -265,6 +265,7 @@ pb_migrations/
   5_create_metrics_collection.js       # metrics collection schema + auth rules
   6_update_papers_metrics_field.js     # changes papers.metrics from JSON to Relation
   8_add_reviewing_fields.js            # adds area_of_slp, ranking, reproduction, conclusion fields to papers
+  9_add_check_papers_source_fields.js  # adds language, abstract, filters, filter_explanations to check_papers
 seed_data/
   papers.json                     # seed data: 67 SLP papers (review task)
   check_papers.json               # seed data: 56 SLP papers (checking task)
@@ -311,6 +312,10 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `pdf_url`                     | url    | Direct PDF link                                      |
 | `title`                       | text   |                                                      |
 | `year`                        | number |                                                      |
+| `language`                    | text   | Source language code, e.g. `en`                     |
+| `abstract`                    | text   | Paper abstract                                       |
+| `filters`                     | json   | Automated eligibility checks, e.g. `{"year": true, "language": true, "abstract": true, "area": true, "approach": true}` |
+| `filter_explanations`         | json   | Free-text rationale per filter (e.g. `area`, `approach`) |
 | `has_empirical_results`       | select | `yes` · `no` · empty = not yet answered              |
 | `is_sign_language_processing` | select | `yes` · `no` · empty = not yet answered              |
 | `status`                      | select | `needs_check` · `checked` · `flagged`                |
