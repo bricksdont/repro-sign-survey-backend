@@ -27,10 +27,12 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 | `seed_data/datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
 | `seed_data/metrics.json` | 16 SLP evaluation metrics for local testing |
 | `seed.py` | Idempotent importer; `--collection` targets any collection or `all`; `--reset` resets annotation fields; `--create-users` for bulk account creation |
-| `Dockerfile` | Alpine image that downloads the PocketBase binary and copies `pb_migrations/` |
+| `bin/backup` | In-image Restic backup script — sqlite3 `.backup` for consistent DB snapshots, then `restic backup` over the snapshots + `pb_data` (live db files excluded), `restic forget`, and a metadata `restic check`, to an S3 repo. Run inside the Fly machine via a command-restricted machine-exec token |
+| `Dockerfile` | Alpine image that downloads the PocketBase binary, installs restic/sqlite, and copies `pb_migrations/` + `bin/backup` |
 | `fly.toml` | Fly.io app config — shared-cpu-1x/256 MB, Frankfurt, persistent volume |
 | `.dockerignore` | Excludes `pb_data/`, local binary, and SQLite WAL files from the image |
 | `.github/workflows/ci.yml` | CI: ruff lint/format, py_compile, JSON validation, JS syntax check |
+| `.github/workflows/backup.yml` | Scheduled Restic backup: wakes the Fly machine, runs `/pb/bin/backup` via the Machines API (`flyctl machine exec`, using a command-restricted token + the `FLY_MACHINE_ID` variable); a failed run notifies via GitHub. Interval is the `cron` in this file |
 | `pb_data/` | Runtime data directory — gitignored, created on first serve |
 | `pocketbase` | Binary — gitignored, download instructions in README |
 

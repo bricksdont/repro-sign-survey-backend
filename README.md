@@ -224,7 +224,87 @@ python3 seed.py \
 
 ### Backups
 
-**Manual backup (recommended before significant data work):**
+#### Automatic off-site backups (Restic -> S3/R2)
+
+A scheduled GitHub Actions workflow (`.github/workflows/backup.yml`) runs a deduplicated,
+encrypted backup of `pb_data` to an S3-compatible Restic repository. The workflow wakes the
+sleeping Fly machine over HTTP, then runs `/pb/bin/backup` inside it via a command-restricted Fly
+machine-exec token. If the backup fails, the workflow run goes red and GitHub notifies. The
+schedule is defined by the `cron` in that workflow file.
+
+**Why Restic instead of PocketBase's built-in backup?** PocketBase can write scheduled zip
+backups to S3, but each is a full, unencrypted copy of the database. Restic gives us block-level
+deduplication, client-side encryption, and integrity checks (`restic check`) — worth the extra
+binary in the image. (PocketBase's own scheduler wouldn't help anyway: its cron can't fire while
+the auto-stopped machine is asleep, so an external trigger is needed regardless.)
+
+**One-time setup:**
+
+1. Set the Restic/S3 credentials as Fly secrets (they never touch GitHub):
+
+   ```bash
+   flyctl secrets set -a repro-sign-survey-backend \
+     RESTIC_REPOSITORY="s3:https://<endpoint>/<bucket>/pocketbase" \
+     RESTIC_PASSWORD="<long-random-restic-password>" \
+     AWS_ACCESS_KEY_ID="<key>" \
+     AWS_SECRET_ACCESS_KEY="<secret>"
+   ```
+
+   Keep `RESTIC_PASSWORD` somewhere safe — **the repository is unrecoverable without it.**
+2. Initialize the repository once:
+
+   ```bash
+   flyctl ssh console -a repro-sign-survey-backend -C "restic init"
+   ```
+
+3. Create the command-restricted token and store it in GitHub:
+
+   ```bash
+   flyctl tokens create machine-exec -a repro-sign-survey-backend \
+     --name github-pocketbase-backup --expiry 8760h \
+     --command "/pb/bin/backup"
+   ```
+
+   Save the value as the GitHub Actions secret `FLY_BACKUP_TOKEN`. Verify flags with
+   `flyctl tokens create machine-exec --help` — the CLI syntax drifts between releases.
+
+4. Record the machine id as a GitHub Actions **variable** (not a secret — it isn't sensitive):
+
+   ```bash
+   flyctl machine list -a repro-sign-survey-backend   # copy the (single) machine id
+   ```
+
+   Save it as the repository/environment variable `FLY_MACHINE_ID`. It's stable across deploys
+   for this volume-bound machine; update it only if the machine is destroyed and recreated.
+
+**Pruning + deep verification:** the backup runs a cheap metadata `restic check` every time, but
+never prunes and never re-reads pack data. Run these manually:
+
+```bash
+restic prune --retry-lock 15m              # reclaim space from forgotten snapshots
+restic check --read-data
+```
+
+**Restoring:**
+
+```bash
+export RESTIC_REPOSITORY="s3:https://<endpoint>/<bucket>/pocketbase"
+export RESTIC_PASSWORD="..." AWS_ACCESS_KEY_ID="..." AWS_SECRET_ACCESS_KEY="..."
+
+restic snapshots --tag pocketbase
+mkdir restore-test && restic restore latest --tag pocketbase --target restore-test
+
+# The snapshot has two roots: the DB snapshots under tmp/pocketbase-backup and
+# the loose pb_data files under pb/pb_data. Merge them into one pb_data tree:
+mkdir restored-pb_data
+cp -a restore-test/pb/pb_data/. restored-pb_data/ 2>/dev/null || true   # loose files
+cp -a restore-test/tmp/pocketbase-backup/. restored-pb_data/            # consistent DBs
+
+./pocketbase serve --dir restored-pb_data --http 127.0.0.1:8091
+# open http://127.0.0.1:8091/_/ and confirm collections + records are intact
+```
+
+#### Manual backup (before significant data work)
 
 1. Open the admin dashboard at **https://repro-sign-survey-backend.fly.dev/_/**
 2. Go to **Settings → Backups** and click **Create new backup**
@@ -232,7 +312,7 @@ python3 seed.py \
 
 The zip contains the full SQLite database and can be used to restore the instance. Store it somewhere safe outside Fly.io.
 
-**Automatic Fly.io volume snapshots:**
+#### Fly.io volume snapshots
 
 Fly.io automatically snapshots the persistent volume daily. Snapshots are retained for **5 days** by default (configurable up to 60 days with `--snapshot-retention`). To list available snapshots:
 
@@ -271,9 +351,11 @@ seed_data/
   datasets.json                   # seed data: 7 SLP datasets (local testing only)
   metrics.json                    # seed data: 16 SLP evaluation metrics
 seed.py                           # imports/resets any collection or all; bulk user creation
+bin/backup                        # in-image Restic backup script (runs on the Fly machine)
 Dockerfile                        # Alpine image for Fly.io deployment
 fly.toml                          # Fly.io app config (Frankfurt, persistent volume)
 .github/workflows/ci.yml          # CI: lint, format, JSON validation, JS syntax
+.github/workflows/backup.yml      # scheduled Restic backup trigger
 ```
 
 ## Data model

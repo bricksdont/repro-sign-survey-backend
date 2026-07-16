@@ -1,0 +1,70 @@
+#!/bin/sh
+# Consistent, deduplicated off-site backup of PocketBase pb_data to a Restic
+# S3-compatible repository. Intended to be invoked inside the Fly.io machine via
+# a command-restricted machine-exec token (see .github/workflows/backup.yml).
+#
+# Restic repo + credentials come from the environment (set as Fly secrets):
+#   RESTIC_REPOSITORY, RESTIC_PASSWORD, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+
+set -eu
+
+PB_DATA="${PB_DATA:-/pb/pb_data}"
+STAGING="${BACKUP_STAGING:-/tmp/pocketbase-backup}"
+LOCK_DIR="/tmp/pocketbase-restic-backup.lock"
+
+cleanup() {
+  rm -rf "$STAGING"
+  rmdir "$LOCK_DIR" 2>/dev/null || true
+}
+
+# Prevent overlapping backups.
+if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+  echo "A backup is already running." >&2
+  exit 1
+fi
+trap cleanup EXIT INT TERM
+
+rm -rf "$STAGING"
+mkdir -p "$STAGING"
+
+echo "Creating consistent SQLite snapshots..."
+# Back up each SQLite database (data.db, auxiliary.db) via the online .backup
+# API rather than copying the live files, which may have pending WAL writes and
+# could be captured torn (WAL out of sync with the main file) by a plain copy.
+find "$PB_DATA" -maxdepth 1 -type f -name '*.db' | while read -r db; do
+  sqlite3 "$db" -cmd ".timeout 30000" ".backup '$STAGING/$(basename "$db")'"
+done
+
+# Guard against a silent no-op backup: if no *.db was snapshotted (wrong
+# PB_DATA, empty volume, sqlite3 failure), restic would still create a snapshot
+# with no database in it and the script would report success. Fail loudly.
+if [ -z "$(find "$STAGING" -maxdepth 1 -type f -name '*.db' 2>/dev/null)" ]; then
+  echo "No SQLite databases were snapshotted from $PB_DATA; aborting." >&2
+  exit 1
+fi
+
+echo "Running Restic backup..."
+# Two source roots in one snapshot: the consistent DB snapshots ($STAGING) plus
+# pb_data read in place for any non-db files (e.g. uploaded storage/). The live
+# db files are excluded because the snapshots above supersede them. Excludes are
+# anchored to $PB_DATA so they never match the *.db snapshots under $STAGING.
+restic backup "$STAGING" "$PB_DATA" \
+  --exclude "$PB_DATA/*.db" \
+  --exclude "$PB_DATA/*.db-wal" \
+  --exclude "$PB_DATA/*.db-shm" \
+  --exclude "$PB_DATA/backups" \
+  --host "${FLY_APP_NAME:-pocketbase}" \
+  --tag pocketbase --tag fly \
+  --retry-lock 2m
+
+echo "Applying retention policy (forget only, no prune)..."
+restic forget \
+  --host "${FLY_APP_NAME:-pocketbase}" \
+  --tag pocketbase \
+  --keep-hourly 48 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+
+echo "Verifying repository integrity..."
+# Verify repository structure + metadata
+restic check --retry-lock 2m
+
+echo "Backup completed successfully."
