@@ -88,7 +88,16 @@ SEED_DEFAULTS = {
 # Bibliographic/catalog fields to copy from the seed JSON file per collection.
 RECORD_FIELDS = {
     "papers": ["paper_id", "pdf_url", "title", "year", "venue", "peer_reviewed"],
-    "check_papers": ["paper_id", "pdf_url", "title", "year"],
+    "check_papers": [
+        "paper_id",
+        "pdf_url",
+        "title",
+        "year",
+        "language",
+        "abstract",
+        "filters",
+        "filter_explanations",
+    ],
     "datasets": ["name", "license", "url", "comments"],
     "metrics": ["name", "url", "comments"],
 }
