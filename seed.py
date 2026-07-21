@@ -71,6 +71,7 @@ SEED_DEFAULTS = {
         "is_sign_language_processing": "",
         "status": "needs_check",
         "flag_reason": "",
+        "checked_by": "",
         "locked_by": "",
         "locked_at": "",
     },

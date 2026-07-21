@@ -23,6 +23,7 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 | `pb_migrations/6_update_papers_metrics_field.js` | Changes `papers.metrics` from a JSON field to a Relation pointing at `metrics` |
 | `pb_migrations/8_add_reviewing_fields.js` | Adds `area_of_slp`, `main_experiment_has_ranking`, `what_to_reproduce`, `compute_requirements`, `textual_conclusion`, `includes_human_evaluation` to `papers` |
 | `pb_migrations/9_add_check_papers_source_fields.js` | Adds `language`, `abstract`, `filters`, `filter_explanations` to `check_papers` |
+| `pb_migrations/10_add_check_papers_checked_by_field.js` | Adds `checked_by` (reviewer email, set on every save) to `check_papers` |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
@@ -97,7 +98,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `includes_human_evaluation` — select: `yes` | `no` | empty
 - `locked_by` / `locked_at` — optimistic lock (enforced in `updateRule`)
 
-**Checking task** — `check_papers` collection (migrations 2, 9):
+**Checking task** — `check_papers` collection (migrations 2, 9, 10):
 - `paper_id`, `pdf_url`, `title`, `year` — bibliographic fields (no `venue` or `peer_reviewed`)
 - `language` — text, source language code (e.g. `en`)
 - `abstract` — text, paper abstract
@@ -107,6 +108,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `is_sign_language_processing` — select: `yes` | `no` | empty (not yet answered)
 - `status` — select: `needs_check` | `checked` | `flagged`
 - `flag_reason` — text
+- `checked_by` — text, email of the reviewer who last saved the record; set client-side on every save (including flags), not just on finalize
 - `locked_by` / `locked_at` — lock fields (same names as in `papers`; no cross-collection conflict since collections are independent)
 
 **Dataset catalog** — `datasets` collection (`pb_migrations/3_create_datasets_collection.js`):
