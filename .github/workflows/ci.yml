@@ -20,13 +20,13 @@ jobs:
         run: pip install ruff
 
       - name: Lint (ruff check)
-        run: ruff check seed.py
+        run: ruff check seed.py scripts/
 
       - name: Format check (ruff format)
-        run: ruff format --check seed.py
+        run: ruff format --check seed.py scripts/
 
       - name: Syntax check
-        run: python3 -m py_compile seed.py
+        run: python3 -m py_compile seed.py scripts/configure_oauth.py
 
       - name: Validate JSON files
         run: |
@@ -37,4 +37,4 @@ jobs:
 
       - name: JS syntax check
         run: |
-          for f in pb_migrations/*.js; do node --check "$f"; done
+          for f in pb_migrations/*.js pb_hooks/*.js; do node --check "$f"; done

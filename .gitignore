@@ -2,3 +2,5 @@ pocketbase
 pb.zip
 pb_data/
 many_papers.json
+.ruff_cache/
+__pycache__/
