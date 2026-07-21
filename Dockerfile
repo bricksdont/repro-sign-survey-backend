@@ -10,6 +10,8 @@ RUN apk add --no-cache unzip ca-certificates restic sqlite && \
 
 COPY pb_migrations /pb/pb_migrations
 
+COPY pb_hooks /pb/pb_hooks
+
 COPY bin/backup /pb/bin/backup
 RUN chmod 0755 /pb/bin/backup
 
