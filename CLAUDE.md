@@ -24,6 +24,7 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 | `pb_migrations/8_add_reviewing_fields.js` | Adds `area_of_slp`, `main_experiment_has_ranking`, `what_to_reproduce`, `compute_requirements`, `textual_conclusion`, `includes_human_evaluation` to `papers` |
 | `pb_migrations/9_add_check_papers_source_fields.js` | Adds `language`, `abstract`, `filters`, `filter_explanations` to `check_papers` |
 | `pb_migrations/10_add_check_papers_checked_by_field.js` | Adds `checked_by` (reviewer email, set on every save) to `check_papers` |
+| `pb_migrations/11_disable_user_registration.js` | Disables self-service registration on `users`; keeps Slack (OAuth2) sign-up working |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
@@ -137,6 +138,14 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 | Delete | `null` — superuser only | same |
 
 User accounts live in the built-in `users` collection (email + password). Superusers are a separate `_superusers` collection.
+
+**Self-service registration is disabled** (`pb_migrations/11_disable_user_registration.js`). The `users` `createRule` is:
+
+```
+@request.context = "oauth2"
+```
+
+A direct `POST /api/collections/users/records` is rejected, but Slack sign-in still creates accounts for first-time users — PocketBase performs OAuth2 sign-up via an *internal* POST to that same endpoint, and `@request.context` is `"oauth2"` only for that path.
 
 ## Edit locking
 
