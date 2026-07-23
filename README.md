@@ -438,6 +438,8 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | Update    | Any authenticated user **who holds the lock** (or if unlocked) | same          |
 | Delete    | Superuser only                                         | same                    |
 
+Self-service registration on the `users` collection is disabled — its `createRule` is `@request.context = "oauth2"`, so a direct `POST /api/collections/users/records` is rejected while Slack sign-in can still create an account for a first-time user.
+
 ### Edit locking
 
 All four collections use the same lock fields (`locked_by` / `locked_at`) and an identical server-side `updateRule`:
