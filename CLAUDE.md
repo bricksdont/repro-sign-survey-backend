@@ -25,6 +25,7 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 | `pb_migrations/9_add_check_papers_source_fields.js` | Adds `language`, `abstract`, `filters`, `filter_explanations` to `check_papers` |
 | `pb_migrations/10_add_check_papers_checked_by_field.js` | Adds `checked_by` (reviewer email, set on every save) to `check_papers` |
 | `pb_migrations/11_disable_user_registration.js` | Disables self-service registration on `users`; keeps Slack (OAuth2) sign-up working |
+| `pb_migrations/12_convert_area_of_slp_to_json.js` | Changes `papers.area_of_slp` from a 12-value `SelectField` to a `JSONField`, preserving existing selections |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
@@ -85,7 +86,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 
 ## Data model
 
-**Review task** — `papers` collection (migrations 1, 4, 6, 8):
+**Review task** — `papers` collection (migrations 1, 4, 6, 8, 12):
 - `paper_id` — unique kebab ID (e.g. `acl-2022.emnlp-main.427`), used for URL routing
 - `pdf_url`, `title`, `year`, `venue`, `peer_reviewed` — bibliographic fields
 - `status` — select: `needs_review` | `final` | `flagged` | `rejected`
@@ -93,7 +94,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `code_repos` — JSON array
 - `datasets` — **Relation** (multi-select) pointing at the `datasets` collection
 - `metrics` — **Relation** (multi-select) pointing at the `metrics` collection
-- `area_of_slp` — select, multi-value (max 12): `Translation` | `Recognition` | `Segmentation / tokenization` | `Alignment` | `Signing detection` | `Generation / production` | `Unsupervised / representation learning` | `Spotting / glossing` | `Transcription` | `Language identification` | `Retrieval` | `Avatar systems`
+- `area_of_slp` — JSON array of strings; free-form chip input on the frontend (no longer restricted to a fixed enum)
 - `main_experiment_has_ranking` — select: `yes` | `no` | empty
 - `what_to_reproduce` — text (pointer to the table(s)/figure(s) that team R has to reproduce)
 - `compute_requirements` — text (optional; empty if not specified in the paper)
@@ -168,7 +169,7 @@ Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no 
 - **Update blocked by lock** returns `HTTP 404`, not `403`. PocketBase treats rule-blocked records as non-existent.
 - **Record IDs** — PocketBase assigns opaque 15-char IDs (e.g. `xscyqaugyl1plkz`). Use `paper_id` for URL routing; use the PocketBase `id` for API calls.
 - **Superuser auth** endpoint: `POST /api/collections/_superusers/auth-with-password` (different from regular user auth at `/api/collections/users/auth-with-password`).
-- **JSON fields** (`code_repos`) must be sent as actual JSON arrays, not strings.
+- **JSON fields** (`code_repos`, `area_of_slp`) must be sent as actual JSON arrays, not strings.
 - **Relation fields** (`papers.datasets`, `papers.metrics`) must be sent as an array of PocketBase record IDs (the opaque 15-char `id` of each related record), not names or strings.
 - **Clearing date fields** — send `""` (empty string), not `null`. Applies to `locked_at`.
 

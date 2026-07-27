@@ -348,6 +348,9 @@ pb_migrations/
   6_update_papers_metrics_field.js     # changes papers.metrics from JSON to Relation
   8_add_reviewing_fields.js            # adds area_of_slp, ranking, reproduction, conclusion fields to papers
   9_add_check_papers_source_fields.js  # adds language, abstract, filters, filter_explanations to check_papers
+  10_add_check_papers_checked_by_field.js # adds checked_by to check_papers
+  11_disable_user_registration.js      # disables self-service registration on users
+  12_convert_area_of_slp_to_json.js    # changes papers.area_of_slp from select to JSON
 seed_data/
   papers.json                     # seed data: 67 SLP papers (review task)
   check_papers.json               # seed data: 56 SLP papers (checking task)
@@ -376,7 +379,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `code_repos`      | json     | Array of repository URLs                                |
 | `datasets`        | relation | Links to records in the `datasets` collection (multi)   |
 | `metrics`         | relation | Links to records in the `metrics` collection (multi)    |
-| `area_of_slp`     | select | Multi-value; Translation · Recognition · Segmentation / tokenization · Alignment · Signing detection · Generation / production · Unsupervised / representation learning · Spotting / glossing · Transcription · Language identification · Retrieval · Avatar systems |
+| `area_of_slp`     | json   | Array of strings; free-form chip input on the frontend (no fixed enum) |
 | `main_experiment_has_ranking` | select | `yes` · `no` · empty = not yet answered |
 | `what_to_reproduce` | text | Pointer to the table(s)/figure(s) that team R has to reproduce |
 | `compute_requirements` | text | Optional; empty if not specified in the paper |
