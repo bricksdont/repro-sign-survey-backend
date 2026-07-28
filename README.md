@@ -142,6 +142,13 @@ To check how `seed.py` performs at scale beyond the 67-paper toy dataset:
 
 Note: an earlier attempt crashed partway through with `Can't assign requested address` — opening a new TCP connection per HTTP request exhausted the local ephemeral port range. `seed.py` now uses a shared `requests.Session()` (connection pooling) and fetches existing `paper_id`s once up front instead of per record, which resolved the crash and produced the results above.
 
+### Deployed instance results
+
+The same 15,000-paper dataset was also seeded against a throwaway Fly.io instance (separate app, not the production deployment) to see how the numbers change over the network:
+
+- **Seeding:** 381.85s (~25.5ms/record) — much slower than the ~11s local result above, since each create request now pays a network round trip to Frankfurt instead of a loopback call.
+- **Frontend load:** the frontend loads all papers via paginated `GET` requests (`perPage=500`); replaying that exact pattern against the seeded instance (30 pages) completed in **1.89s** total (~63ms/page). Loading the reviewer page in an actual browser against this instance took **~2 seconds** end to end, matching the paginated-fetch benchmark — DOM rendering added negligible overhead on top of the network fetch.
+
 ---
 
 ## Deploying to Fly.io
