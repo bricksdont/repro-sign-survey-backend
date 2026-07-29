@@ -1,5 +1,6 @@
 # repro-sign-survey-backend
 
+[![CI](https://github.com/bricksdont/repro-sign-survey-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/bricksdont/repro-sign-survey-backend/actions/workflows/ci.yml)
 [![PocketBase backup](https://github.com/bricksdont/repro-sign-survey-backend/actions/workflows/backup.yml/badge.svg)](https://github.com/bricksdont/repro-sign-survey-backend/actions/workflows/backup.yml)
 
 PocketBase backend for the Sign Language Processing reproducibility survey. Provides a shared database and REST API so multiple reviewers can annotate papers simultaneously.
