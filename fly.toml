@@ -7,6 +7,7 @@ primary_region = 'fra'
 [mounts]
   source = 'pb_data'
   destination = '/pb/pb_data'
+  snapshot_retention = 60
 
 [http_service]
   internal_port = 8090
