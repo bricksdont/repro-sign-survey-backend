@@ -410,6 +410,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `is_sign_language_processing` | select | `yes` · `no` · empty = not yet answered              |
 | `status`                      | select | `needs_check` · `checked` · `flagged`                |
 | `flag_reason`                 | text   |                                                      |
+| `checked_by`                  | text   | Email of the reviewer who completed the check        |
 | `locked_by`                   | text   | User ID of current editor; empty = unlocked          |
 | `locked_at`                   | date   | Lock heartbeat timestamp; expiry enforced client-side|
 
