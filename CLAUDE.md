@@ -13,21 +13,17 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 
 ## File layout
 
+New fields/rules on an existing collection are added by editing that collection's original `NN_create_*.js` migration directly, not by appending a new migration file — this project treats the deployed instance as disposable at this stage, so migration history doesn't need to stay stable. Only migrations with a genuine ordering dependency (e.g. a Relation field that needs another collection to exist first) or that target a collection we don't create ourselves (`users`) get their own file.
+
 | File | Purpose |
 |------|---------|
 | `pb_migrations/01_create_papers_collection.js` | `papers` collection schema + auth rules, applied automatically on `./pocketbase serve` |
 | `pb_migrations/02_create_check_papers_collection.js` | `check_papers` collection schema + auth rules |
 | `pb_migrations/03_create_datasets_collection.js` | `datasets` collection schema + auth rules |
-| `pb_migrations/04_update_papers_datasets_field.js` | Changes `papers.datasets` from a JSON field to a Relation pointing at `datasets` |
+| `pb_migrations/04_update_papers_datasets_field.js` | Changes `papers.datasets` from a JSON field to a Relation pointing at `datasets` (runs after `datasets` exists) |
 | `pb_migrations/05_create_metrics_collection.js` | `metrics` collection schema + auth rules |
-| `pb_migrations/06_fix_collection_rules.js` | Fixes `createRule`/`deleteRule`: `""` → `null` for papers, check_papers, datasets |
-| `pb_migrations/07_update_papers_metrics_field.js` | Changes `papers.metrics` from a JSON field to a Relation pointing at `metrics` |
-| `pb_migrations/08_fix_collection_rules.js` | Fixes `createRule`/`deleteRule` for all four collections including metrics |
-| `pb_migrations/09_add_reviewing_fields.js` | Adds `area_of_slp`, `main_experiment_has_ranking`, `what_to_reproduce`, `compute_requirements`, `textual_conclusion`, `includes_human_evaluation` to `papers` |
-| `pb_migrations/10_add_check_papers_source_fields.js` | Adds `language`, `abstract`, `filters`, `filter_explanations` to `check_papers` |
-| `pb_migrations/11_add_check_papers_checked_by_field.js` | Adds `checked_by` (reviewer email, set on every save) to `check_papers` |
-| `pb_migrations/12_disable_user_registration.js` | Disables self-service registration on `users`; keeps Slack (OAuth2) sign-up working |
-| `pb_migrations/13_convert_area_of_slp_to_json.js` | Changes `papers.area_of_slp` from a 12-value `SelectField` to a `JSONField`, preserving existing selections |
+| `pb_migrations/06_update_papers_metrics_field.js` | Changes `papers.metrics` from a JSON field to a Relation pointing at `metrics` (runs after `metrics` exists) |
+| `pb_migrations/07_disable_user_registration.js` | Disables self-service registration on `users`; keeps Slack (OAuth2) sign-up working |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
@@ -88,7 +84,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 
 ## Data model
 
-**Review task** — `papers` collection (migrations 01, 04, 07, 09, 13):
+**Review task** — `papers` collection (migrations 01, 04, 06):
 - `paper_id` — unique kebab ID (e.g. `acl-2022.emnlp-main.427`), used for URL routing
 - `pdf_url`, `title`, `year`, `venue` — bibliographic fields
 - `peer_reviewed` — select: `yes` | `no` | `na` | empty (not yet answered); annotation field
@@ -108,7 +104,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `potential_ethical_concerns` — select: `yes` | `no` | empty
 - `locked_by` / `locked_at` — optimistic lock (enforced in `updateRule`)
 
-**Checking task** — `check_papers` collection (migrations 2, 9, 10):
+**Checking task** — `check_papers` collection (migration 02):
 - `paper_id`, `pdf_url`, `title`, `year` — bibliographic fields (no `venue` or `peer_reviewed`)
 - `language` — text, source language code (e.g. `en`)
 - `abstract` — text, paper abstract
@@ -146,7 +142,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 
 User accounts live in the built-in `users` collection (email + password). Superusers are a separate `_superusers` collection.
 
-**Self-service registration is disabled** (`pb_migrations/12_disable_user_registration.js`). The `users` `createRule` is:
+**Self-service registration is disabled** (`pb_migrations/07_disable_user_registration.js`). The `users` `createRule` is:
 
 ```
 @request.context = "oauth2"

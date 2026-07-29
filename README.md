@@ -341,19 +341,13 @@ flyctl volumes list                  # check persistent volume
 
 ```
 pb_migrations/
-  01_create_papers_collection.js        # papers collection schema + auth rules
-  02_create_check_papers_collection.js  # check_papers collection schema + auth rules
+  01_create_papers_collection.js        # papers collection schema + auth rules (all annotation fields inline)
+  02_create_check_papers_collection.js  # check_papers collection schema + auth rules (all fields inline)
   03_create_datasets_collection.js      # datasets collection schema + auth rules
-  04_update_papers_datasets_field.js    # changes papers.datasets from JSON to Relation
+  04_update_papers_datasets_field.js    # changes papers.datasets from JSON to Relation (needs datasets to exist first)
   05_create_metrics_collection.js       # metrics collection schema + auth rules
-  06_fix_collection_rules.js            # fix createRule/deleteRule: "" → null (datasets branch patch)
-  07_update_papers_metrics_field.js     # changes papers.metrics from JSON to Relation
-  08_fix_collection_rules.js            # fix createRule/deleteRule for all 4 collections (metrics branch patch)
-  09_add_reviewing_fields.js            # adds area_of_slp, ranking, reproduction, conclusion fields to papers
-  10_add_check_papers_source_fields.js  # adds language, abstract, filters, filter_explanations to check_papers
-  11_add_check_papers_checked_by_field.js # adds checked_by to check_papers
-  12_disable_user_registration.js       # disables self-service registration on users
-  13_convert_area_of_slp_to_json.js     # changes papers.area_of_slp from select to JSON
+  06_update_papers_metrics_field.js     # changes papers.metrics from JSON to Relation (needs metrics to exist first)
+  07_disable_user_registration.js       # disables self-service registration on users
 seed_data/
   papers.json                     # seed data: 67 SLP papers (review task)
   check_papers.json               # seed data: 56 SLP papers (checking task)
