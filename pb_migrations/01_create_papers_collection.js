@@ -85,8 +85,10 @@ migrate((app) => {
       },
       {
         name: "copied_scores",
-        type: "bool",
-        required: false
+        type: "select",
+        required: false,
+        values: ["yes", "no"],
+        maxSelect: 1
       },
       {
         name: "potential_ethical_concerns",

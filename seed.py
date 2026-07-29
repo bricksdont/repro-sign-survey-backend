@@ -65,7 +65,7 @@ SEED_DEFAULTS = {
         "textual_conclusion": "",
         "includes_human_evaluation": "",
         "finalized_by": "",
-        "copied_scores": False,
+        "copied_scores": "",
         "potential_ethical_concerns": "",
         "locked_by": "",
         "locked_at": None,

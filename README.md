@@ -389,7 +389,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `textual_conclusion` | text | Main conclusion copy-pasted from the paper |
 | `includes_human_evaluation` | select | `yes` · `no` · empty = not yet answered |
 | `potential_ethical_concerns` | select | `yes` · `no` · empty = not yet answered |
-| `copied_scores`   | bool   | Whether baseline scores were copied rather than reproduced |
+| `copied_scores`   | select | `yes` · `no` · empty = not yet answered; whether baseline scores were copied rather than reproduced |
 | `status`          | select | `needs_review` · `final` · `flagged` · `rejected`       |
 | `flag_reason`     | text   |                                                         |
 | `rejection_reason`| text   |                                                         |

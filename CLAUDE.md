@@ -95,7 +95,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `status` — select: `needs_review` | `final` | `flagged` | `rejected`
 - `flag_reason`, `rejection_reason` — text
 - `finalized_by` — text, email of the reviewer who set status to `final`; set client-side
-- `copied_scores` — bool, whether baseline scores were copied rather than reproduced
+- `copied_scores` — select: `yes` | `no` | empty, whether baseline scores were copied rather than reproduced
 - `code_repos` — JSON array
 - `datasets` — **Relation** (multi-select) pointing at the `datasets` collection
 - `metrics` — **Relation** (multi-select) pointing at the `metrics` collection
