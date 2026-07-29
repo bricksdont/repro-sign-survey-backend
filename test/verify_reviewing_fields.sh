@@ -2,7 +2,7 @@
 # Manual verification for PR #14 (feature/reviewing-additional-fields).
 #
 # Spins up a throwaway PocketBase instance in a temp directory (never touches
-# pb_data/), applies pb_migrations/8_add_reviewing_fields.js, seeds it, and
+# pb_data/), applies pb_migrations/09_add_reviewing_fields.js, seeds it, and
 # exercises the six new `papers` fields end-to-end:
 #   - schema has the right field types/select values
 #   - seeding sets empty defaults
@@ -92,15 +92,10 @@ with open(sys.argv[1]) as f:
 fields = {f["name"]: f for f in schema["fields"]}
 
 expected_select = {
-    "area_of_slp": (12, [
-        "Translation", "Recognition", "Segmentation / tokenization", "Alignment",
-        "Signing detection", "Generation / production",
-        "Unsupervised / representation learning", "Spotting / glossing",
-        "Transcription", "Language identification", "Retrieval", "Avatar systems",
-    ]),
     "main_experiment_has_ranking": (1, ["yes", "no"]),
     "includes_human_evaluation": (1, ["yes", "no"]),
 }
+expected_json = ["area_of_slp"]
 expected_text = ["what_to_reproduce", "compute_requirements", "textual_conclusion"]
 
 ok = True
@@ -115,6 +110,14 @@ for name, (max_select, values) in expected_select.items():
         ok = False
     else:
         print(f"  PASS: {name} is select(maxSelect={max_select}) with expected values")
+
+for name in expected_json:
+    field = fields.get(name)
+    if not field or field["type"] != "json":
+        print(f"  FAIL: {name} missing or not a json field")
+        ok = False
+    else:
+        print(f"  PASS: {name} is a json field")
 
 for name in expected_text:
     field = fields.get(name)
