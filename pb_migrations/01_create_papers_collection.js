@@ -38,8 +38,10 @@ migrate((app) => {
       },
       {
         name: "peer_reviewed",
-        type: "bool",
-        required: false
+        type: "select",
+        required: false,
+        values: ["yes", "no", "na"],
+        maxSelect: 1
       },
       {
         name: "code_repos",

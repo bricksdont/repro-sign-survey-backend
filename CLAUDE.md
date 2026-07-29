@@ -15,17 +15,19 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 
 | File | Purpose |
 |------|---------|
-| `pb_migrations/1_create_papers_collection.js` | `papers` collection schema + auth rules, applied automatically on `./pocketbase serve` |
-| `pb_migrations/2_create_check_papers_collection.js` | `check_papers` collection schema + auth rules |
-| `pb_migrations/3_create_datasets_collection.js` | `datasets` collection schema + auth rules |
-| `pb_migrations/4_update_papers_datasets_field.js` | Changes `papers.datasets` from a JSON field to a Relation pointing at `datasets` |
-| `pb_migrations/5_create_metrics_collection.js` | `metrics` collection schema + auth rules |
-| `pb_migrations/6_update_papers_metrics_field.js` | Changes `papers.metrics` from a JSON field to a Relation pointing at `metrics` |
-| `pb_migrations/8_add_reviewing_fields.js` | Adds `area_of_slp`, `main_experiment_has_ranking`, `what_to_reproduce`, `compute_requirements`, `textual_conclusion`, `includes_human_evaluation` to `papers` |
-| `pb_migrations/9_add_check_papers_source_fields.js` | Adds `language`, `abstract`, `filters`, `filter_explanations` to `check_papers` |
-| `pb_migrations/10_add_check_papers_checked_by_field.js` | Adds `checked_by` (reviewer email, set on every save) to `check_papers` |
-| `pb_migrations/11_disable_user_registration.js` | Disables self-service registration on `users`; keeps Slack (OAuth2) sign-up working |
-| `pb_migrations/12_convert_area_of_slp_to_json.js` | Changes `papers.area_of_slp` from a 12-value `SelectField` to a `JSONField`, preserving existing selections |
+| `pb_migrations/01_create_papers_collection.js` | `papers` collection schema + auth rules, applied automatically on `./pocketbase serve` |
+| `pb_migrations/02_create_check_papers_collection.js` | `check_papers` collection schema + auth rules |
+| `pb_migrations/03_create_datasets_collection.js` | `datasets` collection schema + auth rules |
+| `pb_migrations/04_update_papers_datasets_field.js` | Changes `papers.datasets` from a JSON field to a Relation pointing at `datasets` |
+| `pb_migrations/05_create_metrics_collection.js` | `metrics` collection schema + auth rules |
+| `pb_migrations/06_fix_collection_rules.js` | Fixes `createRule`/`deleteRule`: `""` → `null` for papers, check_papers, datasets |
+| `pb_migrations/07_update_papers_metrics_field.js` | Changes `papers.metrics` from a JSON field to a Relation pointing at `metrics` |
+| `pb_migrations/08_fix_collection_rules.js` | Fixes `createRule`/`deleteRule` for all four collections including metrics |
+| `pb_migrations/09_add_reviewing_fields.js` | Adds `area_of_slp`, `main_experiment_has_ranking`, `what_to_reproduce`, `compute_requirements`, `textual_conclusion`, `includes_human_evaluation` to `papers` |
+| `pb_migrations/10_add_check_papers_source_fields.js` | Adds `language`, `abstract`, `filters`, `filter_explanations` to `check_papers` |
+| `pb_migrations/11_add_check_papers_checked_by_field.js` | Adds `checked_by` (reviewer email, set on every save) to `check_papers` |
+| `pb_migrations/12_disable_user_registration.js` | Disables self-service registration on `users`; keeps Slack (OAuth2) sign-up working |
+| `pb_migrations/13_convert_area_of_slp_to_json.js` | Changes `papers.area_of_slp` from a 12-value `SelectField` to a `JSONField`, preserving existing selections |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
@@ -86,9 +88,10 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 
 ## Data model
 
-**Review task** — `papers` collection (migrations 1, 4, 6, 8, 12):
+**Review task** — `papers` collection (migrations 01, 04, 07, 09, 13):
 - `paper_id` — unique kebab ID (e.g. `acl-2022.emnlp-main.427`), used for URL routing
-- `pdf_url`, `title`, `year`, `venue`, `peer_reviewed` — bibliographic fields
+- `pdf_url`, `title`, `year`, `venue` — bibliographic fields
+- `peer_reviewed` — select: `yes` | `no` | `na` | empty (not yet answered); annotation field
 - `status` — select: `needs_review` | `final` | `flagged` | `rejected`
 - `flag_reason`, `rejection_reason` — text
 - `code_repos` — JSON array
@@ -115,7 +118,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `checked_by` — text, email of the reviewer who last saved the record; set client-side on every save (including flags), not just on finalize
 - `locked_by` / `locked_at` — lock fields (same names as in `papers`; no cross-collection conflict since collections are independent)
 
-**Dataset catalog** — `datasets` collection (`pb_migrations/3_create_datasets_collection.js`):
+**Dataset catalog** — `datasets` collection (`pb_migrations/03_create_datasets_collection.js`):
 - `name` — unique dataset name; used as the unique key for seeding
 - `license` — text
 - `url` — JSON array of URLs
@@ -123,7 +126,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `comments` — text
 - `locked_by` / `locked_at` — optimistic lock (same pattern as other collections)
 
-**Metric catalog** — `metrics` collection (`pb_migrations/5_create_metrics_collection.js`):
+**Metric catalog** — `metrics` collection (`pb_migrations/05_create_metrics_collection.js`):
 - `name` — unique metric name; used as the unique key for seeding
 - `url` — JSON array of URLs (e.g. paper or documentation links)
 - `comments` — text
@@ -140,7 +143,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 
 User accounts live in the built-in `users` collection (email + password). Superusers are a separate `_superusers` collection.
 
-**Self-service registration is disabled** (`pb_migrations/11_disable_user_registration.js`). The `users` `createRule` is:
+**Self-service registration is disabled** (`pb_migrations/12_disable_user_registration.js`). The `users` `createRule` is:
 
 ```
 @request.context = "oauth2"
@@ -184,7 +187,7 @@ Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no 
   "title": "Open-Domain Sign Language Translation Learned from Online Video",
   "year": 2022,
   "venue": "EMNLP",
-  "peer_reviewed": true,
+  "peer_reviewed": "",
   "code_repos": [],
   "metrics": []
 }

@@ -51,6 +51,7 @@ SESSION = requests.Session()
 
 SEED_DEFAULTS = {
     "papers": {
+        "peer_reviewed": "",
         "code_repos": [],
         "datasets": [],
         "metrics": [],
@@ -88,7 +89,7 @@ SEED_DEFAULTS = {
 
 # Bibliographic/catalog fields to copy from the seed JSON file per collection.
 RECORD_FIELDS = {
-    "papers": ["paper_id", "pdf_url", "title", "year", "venue", "peer_reviewed"],
+    "papers": ["paper_id", "pdf_url", "title", "year", "venue"],
     "check_papers": [
         "paper_id",
         "pdf_url",
