@@ -388,9 +388,12 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `compute_requirements` | text | Optional; empty if not specified in the paper |
 | `textual_conclusion` | text | Main conclusion copy-pasted from the paper |
 | `includes_human_evaluation` | select | `yes` · `no` · empty = not yet answered |
+| `potential_ethical_concerns` | select | `yes` · `no` · empty = not yet answered |
+| `copied_scores`   | bool   | Whether baseline scores were copied rather than reproduced |
 | `status`          | select | `needs_review` · `final` · `flagged` · `rejected`       |
 | `flag_reason`     | text   |                                                         |
 | `rejection_reason`| text   |                                                         |
+| `finalized_by`    | text   | Email of the reviewer who set status to `final`; set client-side |
 | `locked_by`       | text   | User ID of current editor; empty = unlocked             |
 | `locked_at`       | date   | Lock heartbeat timestamp; expiry enforced client-side   |
 

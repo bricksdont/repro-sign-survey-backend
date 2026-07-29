@@ -78,6 +78,24 @@ migrate((app) => {
         max: 500
       },
       {
+        name: "finalized_by",
+        type: "text",
+        required: false,
+        max: 200
+      },
+      {
+        name: "copied_scores",
+        type: "bool",
+        required: false
+      },
+      {
+        name: "potential_ethical_concerns",
+        type: "select",
+        required: false,
+        values: ["yes", "no"],
+        maxSelect: 1
+      },
+      {
         name: "locked_by",
         type: "text",
         required: false,
