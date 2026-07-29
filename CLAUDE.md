@@ -94,6 +94,8 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `peer_reviewed` — select: `yes` | `no` | `na` | empty (not yet answered); annotation field
 - `status` — select: `needs_review` | `final` | `flagged` | `rejected`
 - `flag_reason`, `rejection_reason` — text
+- `finalized_by` — text, email of the reviewer who set status to `final`; set client-side
+- `copied_scores` — select: `yes` | `no` | empty, whether baseline scores were copied rather than reproduced
 - `code_repos` — JSON array
 - `datasets` — **Relation** (multi-select) pointing at the `datasets` collection
 - `metrics` — **Relation** (multi-select) pointing at the `metrics` collection
@@ -103,6 +105,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `compute_requirements` — text (optional; empty if not specified in the paper)
 - `textual_conclusion` — text (copy-pasted main conclusion from the paper)
 - `includes_human_evaluation` — select: `yes` | `no` | empty
+- `potential_ethical_concerns` — select: `yes` | `no` | empty
 - `locked_by` / `locked_at` — optimistic lock (enforced in `updateRule`)
 
 **Checking task** — `check_papers` collection (migrations 2, 9, 10):
