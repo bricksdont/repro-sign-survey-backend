@@ -78,6 +78,11 @@ migrate((app) => {
         max: 500
       },
       {
+        name: "status_history",
+        type: "json",
+        required: false
+      },
+      {
         name: "finalized_by",
         type: "text",
         required: false,

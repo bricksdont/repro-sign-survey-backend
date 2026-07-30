@@ -387,6 +387,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `status`          | select | `needs_review` · `final` · `flagged` · `rejected`       |
 | `flag_reason`     | text   |                                                         |
 | `rejection_reason`| text   |                                                         |
+| `status_history`  | json   | Array of status changes: `{"by", "before", "after", "when"}`; appended client-side |
 | `finalized_by`    | text   | Email of the reviewer who set status to `final`; set client-side |
 | `locked_by`       | text   | User ID of current editor; empty = unlocked             |
 | `locked_at`       | date   | Lock heartbeat timestamp; expiry enforced client-side   |

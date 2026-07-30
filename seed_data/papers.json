@@ -16,7 +16,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2020.conll-1.51",
@@ -34,7 +35,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2020.signlang-1.29",
@@ -52,7 +54,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-L16-1220",
@@ -70,7 +73,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2020.signlang-1.14",
@@ -88,7 +92,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.signlang-1.11",
@@ -106,7 +111,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-L18-1666",
@@ -124,7 +130,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-Y08-1002",
@@ -142,7 +149,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.signlang-1.24",
@@ -160,7 +168,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2021.mtsummit-at4ssl.11",
@@ -178,7 +187,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "arxiv-2011-09846",
@@ -196,7 +206,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "arxiv-2007-12530",
@@ -214,7 +225,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "arxiv-2110-06161",
@@ -232,7 +244,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.acl-long.150",
@@ -250,7 +263,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2023.eacl-main.200",
@@ -268,7 +282,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.acl-short.49",
@@ -286,7 +301,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2021.acl-long.570",
@@ -304,7 +320,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.sltat-1.18",
@@ -322,7 +339,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2023.findings-eacl.127",
@@ -340,7 +358,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2021.mtsummit-at4ssl.1",
@@ -358,7 +377,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2020.signlang-1.15",
@@ -376,7 +396,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2020.coling-main.525",
@@ -394,7 +415,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.sltat-1.15",
@@ -412,7 +434,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "arxiv-2202-03086",
@@ -430,7 +453,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.wmt-1.71",
@@ -448,7 +472,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.emnlp-main.427",
@@ -466,7 +491,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2020.signlang-1.25",
@@ -484,7 +510,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2020.signlang-1.10",
@@ -502,7 +529,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.sltat-1.10",
@@ -520,7 +548,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.sltat-1.19",
@@ -538,7 +567,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2021.bucc-1.4",
@@ -556,7 +586,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2023.at4ssl-1.3",
@@ -574,7 +605,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2023.acl-short.60",
@@ -592,7 +624,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2023.findings-emnlp.846",
@@ -610,7 +643,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2023.findings-acl.665",
@@ -628,7 +662,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.signlang-1.15",
@@ -646,7 +681,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.lrec-main.1289",
@@ -664,7 +700,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2022.sltat-1.9",
@@ -682,7 +719,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2020.signlang-1.30",
@@ -700,7 +738,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.3",
@@ -718,7 +757,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.4",
@@ -736,7 +776,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.5",
@@ -754,7 +795,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.6",
@@ -772,7 +814,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.10",
@@ -790,7 +833,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.12",
@@ -808,7 +852,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.13",
@@ -826,7 +871,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.42",
@@ -844,7 +890,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.44",
@@ -862,7 +909,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.2",
@@ -880,7 +928,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.18",
@@ -898,7 +947,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.24",
@@ -916,7 +966,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.32",
@@ -934,7 +985,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.40",
@@ -952,7 +1004,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.45",
@@ -970,7 +1023,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.36",
@@ -988,7 +1042,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.29",
@@ -1006,7 +1061,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.8",
@@ -1024,7 +1080,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.9",
@@ -1042,7 +1099,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.19",
@@ -1060,7 +1118,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.39",
@@ -1078,7 +1137,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.38",
@@ -1096,7 +1156,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.23",
@@ -1114,7 +1175,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.16",
@@ -1132,7 +1194,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.25",
@@ -1150,7 +1213,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "acl-2024.signlang-1.30",
@@ -1168,7 +1232,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "emnlp-2024-518",
@@ -1189,7 +1254,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     },
     {
       "id": "openreview-M80WgiO2Lb",
@@ -1207,7 +1273,8 @@
       "what_to_reproduce": "",
       "compute_requirements": "",
       "textual_conclusion": "",
-      "includes_human_evaluation": ""
+      "includes_human_evaluation": "",
+      "status_history": []
     }
   ]
 }
