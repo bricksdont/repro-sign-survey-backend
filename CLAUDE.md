@@ -90,6 +90,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `peer_reviewed` — select: `yes` | `no` | `na` | empty (not yet answered); annotation field
 - `status` — select: `needs_review` | `final` | `flagged` | `rejected`
 - `flag_reason`, `rejection_reason` — text
+- `status_history` — JSON array of status changes, appended client-side; each entry is `{"by": <email>, "before": <status>, "after": <status>, "when": <ISO timestamp>}`. Seeded as `[]`
 - `finalized_by` — text, email of the reviewer who set status to `final`; set client-side
 - `copied_scores` — select: `yes` | `no` | empty, whether baseline scores were copied rather than reproduced
 - `code_repos` — JSON array
