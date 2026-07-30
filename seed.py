@@ -10,6 +10,10 @@ Seed check_papers:
     python3 seed.py --email admin@example.com --password secret \
         --collection check_papers --data check_papers.json
 
+Seed, failing if any record is missing a known field:
+    python3 seed.py --email admin@example.com --password secret \
+        --collection all --strict
+
 Reset all records to seed state (no restart needed):
     python3 seed.py --email admin@example.com --password secret --reset
     python3 seed.py --email admin@example.com --password secret \
@@ -122,6 +126,15 @@ UNIQUE_JSON_KEY = {
     "metrics": "name",
 }
 
+# Server-side runtime state, never carried in seed files. Excluded from --strict.
+LOCK_FIELDS = ("locked_by", "locked_at")
+
+# Relation fields, mapped to the catalog they point at. Seed files carry catalog
+# *names*; the API needs PocketBase record IDs, so these are resolved at seed time.
+RELATION_FIELDS = {
+    "papers": {"datasets": "datasets", "metrics": "metrics"},
+}
+
 # Order used by --collection all: reference catalogs first, then paper collections.
 ALL_COLLECTIONS = ["datasets", "metrics", "papers", "check_papers"]
 
@@ -153,6 +166,13 @@ def parse_args():
         "--reset",
         action="store_true",
         help="Reset all existing records to their initial seed state instead of importing",
+    )
+    p.add_argument(
+        "--strict",
+        action="store_true",
+        help="Fail if any seed record is missing a known field, instead of filling it "
+        f"from the defaults (lock fields {'/'.join(LOCK_FIELDS)} are always exempt); "
+        "ignored with --reset, which does not read the seed file",
     )
     p.add_argument(
         "--create-users",
@@ -209,14 +229,104 @@ def existing_unique_values(base_url: str, headers: dict, collection: str) -> set
     return {r[field] for r in records}
 
 
-def create_record(base_url: str, headers: dict, collection: str, item: dict) -> bool:
+def expected_json_keys(collection: str) -> list:
+    """Keys a seed record is expected to carry, in payload order.
+
+    Bibliographic/catalog fields plus every field SEED_DEFAULTS would fill in,
+    minus the lock fields, which are runtime state and never seeded.
+    """
+    unique_api = UNIQUE_FIELD[collection]
+    unique_json = UNIQUE_JSON_KEY[collection]
+    keys = [unique_json if f == unique_api else f for f in RECORD_FIELDS[collection]]
+    keys += [f for f in SEED_DEFAULTS[collection] if f not in LOCK_FIELDS]
+    seen = set()
+    return [k for k in keys if not (k in seen or seen.add(k))]
+
+
+def find_missing_fields(collection: str, items: list) -> list:
+    """Return [(record label, [missing keys])] for records with absent keys."""
+    expected = expected_json_keys(collection)
+    unique_json = UNIQUE_JSON_KEY[collection]
+    problems = []
+    for index, item in enumerate(items):
+        missing = [k for k in expected if k not in item]
+        if missing:
+            problems.append((item.get(unique_json, f"<record {index}>"), missing))
+    return problems
+
+
+def build_relation_maps(
+    base_url: str, headers: dict, collection: str, items: list
+) -> dict:
+    """Return {field: {catalog name: record id}} for `collection`'s relations.
+
+    Each target catalog is fetched once, and only when some record actually
+    carries a value for that field, so the common all-empty case costs nothing.
+    """
+    maps = {}
+    for field, target in RELATION_FIELDS.get(collection, {}).items():
+        if not any(item.get(field) for item in items):
+            continue
+        records = fetch_all_records(base_url, headers, target)
+        maps[field] = {r[UNIQUE_FIELD[target]]: r["id"] for r in records}
+    return maps
+
+
+def resolve_relations(collection: str, item: dict, relation_maps: dict):
+    """Map catalog names to record IDs. Returns (resolved fields, problems)."""
+    resolved, problems = {}, []
+    for field, name_to_id in relation_maps.items():
+        names = item.get(field)
+        if not names:
+            continue
+        target = RELATION_FIELDS[collection][field]
+        if not name_to_id:
+            problems.append(f"{target} catalog is empty - seed {target} first")
+            continue
+        ids = []
+        for name in names:
+            if name in name_to_id:
+                ids.append(name_to_id[name])
+            else:
+                problems.append(f"unknown {target} {name!r}")
+        resolved[field] = ids
+    return resolved, problems
+
+
+def find_unresolvable_relations(collection: str, items: list, relation_maps: dict):
+    """Return [(record label, [problems])] for records with unresolvable names."""
+    unique_json = UNIQUE_JSON_KEY[collection]
+    out = []
+    for index, item in enumerate(items):
+        _, problems = resolve_relations(collection, item, relation_maps)
+        if problems:
+            out.append((item.get(unique_json, f"<record {index}>"), problems))
+    return out
+
+
+def create_record(
+    base_url: str,
+    headers: dict,
+    collection: str,
+    item: dict,
+    relation_maps: Optional[dict] = None,
+):
+    """Create one record. Returns (ok, problem) where problem explains a failure."""
     defaults = SEED_DEFAULTS[collection]
     bib_fields = RECORD_FIELDS[collection]
     unique_api = UNIQUE_FIELD[collection]
     unique_json = UNIQUE_JSON_KEY[collection]
     payload = {f: item.get(unique_json if f == unique_api else f) for f in bib_fields}
+    # Defaults are a fallback, not an override: a value present in the seed file
+    # wins. Only keys the file omits are filled in from SEED_DEFAULTS.
+    for field, default in defaults.items():
+        payload[field] = item.get(field, default)
+
+    resolved, problems = resolve_relations(collection, item, relation_maps or {})
+    if problems:
+        return False, "; ".join(problems)
+    payload.update(resolved)
     payload = {k: v for k, v in payload.items() if v is not None}
-    payload.update({k: v for k, v in defaults.items() if v is not None})
 
     resp = SESSION.post(
         f"{base_url}/api/collections/{collection}/records",
@@ -224,7 +334,9 @@ def create_record(base_url: str, headers: dict, collection: str, item: dict) -> 
         json=payload,
         timeout=10,
     )
-    return resp.status_code in (200, 201)
+    if resp.status_code in (200, 201):
+        return True, None
+    return False, f"HTTP {resp.status_code}"
 
 
 def reset_record(base_url: str, headers: dict, collection: str, pb_id: str) -> bool:
@@ -239,7 +351,9 @@ def reset_record(base_url: str, headers: dict, collection: str, pb_id: str) -> b
     return resp.status_code == 200
 
 
-def cmd_seed(base_url: str, headers: dict, collection: str, data_path: Path):
+def cmd_seed(
+    base_url: str, headers: dict, collection: str, data_path: Path, strict: bool = False
+):
     with open(data_path) as f:
         data = json.load(f)
     # Try collection name as top-level key first; fall back to "papers" for
@@ -249,11 +363,37 @@ def cmd_seed(base_url: str, headers: dict, collection: str, data_path: Path):
         sys.exit("No records found in data file.")
     print(f"Loaded {len(items)} records from {data_path}")
 
+    if strict:
+        problems = find_missing_fields(collection, items)
+        if problems:
+            print(f"\n{len(problems)} record(s) in {data_path} are missing fields:")
+            for label, missing in problems[:20]:
+                print(f"  {label}: {', '.join(missing)}")
+            if len(problems) > 20:
+                print(f"  ... and {len(problems) - 20} more")
+            sys.exit(1)
+        print("Strict check passed: all records have every known field")
+
     unique_json = UNIQUE_JSON_KEY[collection]
     unique_field = UNIQUE_FIELD[collection]
     print(f"Fetching existing {unique_field}s...")
     existing = existing_unique_values(base_url, headers, collection)
     print(f"Found {len(existing)} existing records")
+
+    relation_maps = build_relation_maps(base_url, headers, collection, items)
+    for field, name_to_id in relation_maps.items():
+        print(f"Resolved {len(name_to_id)} {field} names to record IDs")
+
+    if strict and relation_maps:
+        problems = find_unresolvable_relations(collection, items, relation_maps)
+        if problems:
+            print(f"\n{len(problems)} record(s) have unresolvable relations:")
+            for label, reasons in problems[:20]:
+                print(f"  {label}: {'; '.join(reasons)}")
+            if len(problems) > 20:
+                print(f"  ... and {len(problems) - 20} more")
+            sys.exit(1)
+        print("Strict check passed: all relation names resolve")
 
     created = skipped = errors = 0
     for item in items:
@@ -261,11 +401,13 @@ def cmd_seed(base_url: str, headers: dict, collection: str, data_path: Path):
         if uid in existing:
             print(f"  SKIP  {uid}")
             skipped += 1
-        elif create_record(base_url, headers, collection, item):
+            continue
+        ok, problem = create_record(base_url, headers, collection, item, relation_maps)
+        if ok:
             print(f"  OK    {uid}")
             created += 1
         else:
-            print(f"  ERROR {uid}")
+            print(f"  ERROR {uid} ({problem})")
             errors += 1
 
     print(f"\nDone: {created} created, {skipped} skipped, {errors} errors")
@@ -360,6 +502,7 @@ def main():
                     headers,
                     col,
                     Path(__file__).parent / "seed_data" / f"{col}.json",
+                    args.strict,
                 )
                 summary[col] = (created, skipped, errors)
         print(f"\n{'=' * 50}")
@@ -381,7 +524,7 @@ def main():
             if args.data
             else Path(__file__).parent / "seed_data" / f"{collection}.json"
         )
-        cmd_seed(base_url, headers, collection, data_path)
+        cmd_seed(base_url, headers, collection, data_path, args.strict)
 
 
 if __name__ == "__main__":

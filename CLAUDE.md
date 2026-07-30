@@ -26,9 +26,9 @@ New fields/rules on an existing collection are added by editing that collection'
 | `pb_migrations/07_disable_user_registration.js` | Disables self-service registration on `users`; keeps Slack (OAuth2) sign-up working |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
-| `seed_data/datasets.json` | 7 SLP datasets for local testing (not intended for production seeding) |
-| `seed_data/metrics.json` | 16 SLP evaluation metrics for local testing |
-| `seed.py` | Idempotent importer; `--collection` targets any collection or `all`; `--reset` resets annotation fields; `--create-users` for bulk account creation |
+| `seed_data/datasets.json` | 59 SLP datasets for local testing (not intended for production seeding) |
+| `seed_data/metrics.json` | 29 SLP evaluation metrics for local testing |
+| `seed.py` | Idempotent importer; `--collection` targets any collection or `all`; `--reset` resets annotation fields; `--strict` fails on incomplete seed records; `--create-users` for bulk account creation |
 | `scripts/configure_oauth.py` | One-off ops script (superuser API) that enables the Slack OIDC provider on `users`. |
 | `pb_hooks/slack_workspace_guard.pb.js` | PocketBase JS hook restricting Slack (`oidc`) logins to the workspaces in `SLACK_ALLOWED_TEAM_IDS` |
 | `bin/backup` | In-image Restic backup script — sqlite3 `.backup` for consistent DB snapshots, then `restic backup` over the snapshots + `pb_data` (live db files excluded), `restic forget`, and a metadata `restic check`, to an S3 repo. Run inside the Fly machine via a command-restricted machine-exec token |
@@ -178,7 +178,13 @@ Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no 
 
 ## Seed data
 
-`seed_data/papers.json` has 67 papers. To add more, append entries in the same format and re-run `seed.py` (it skips existing `paper_id`s). The `datasets` field is left empty on seed; reviewers populate it by linking to `datasets` collection records during annotation.
+`seed_data/papers.json` has 67 papers. To add more, append entries in the same format and re-run `seed.py` (it skips existing `paper_id`s).
+
+**How values are resolved when seeding:**
+
+- A value present in the seed file wins. `SEED_DEFAULTS` in `seed.py` is only a *fallback*, filling in keys the file omits — it does not override what the file says.
+- `--strict` fails the run if any record is missing a known field, instead of quietly filling it from the defaults. Lock fields (`locked_by` / `locked_at`) are exempt: they are server-side runtime state and never appear in seed files. All four seed files are complete in this sense, so `--strict` passes on them as shipped.
+- **Relation fields** (`papers.datasets`, `papers.metrics`) are written as catalog *names* in the seed file and resolved to PocketBase record IDs at seed time. Each catalog is fetched once, and only if some record actually uses it. An unknown name fails that record with `ERROR <id> (unknown datasets 'Foo')`; under `--strict` the run aborts before writing anything. Seeding `papers` on its own against a database whose catalogs were never seeded reports `datasets catalog is empty - seed datasets first` — use `--collection all`, which seeds catalogs first.
 
 ```json
 {
@@ -193,7 +199,7 @@ Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no 
 }
 ```
 
-`seed_data/datasets.json` has 7 SLP datasets and `seed_data/metrics.json` has 16 evaluation metrics, both for local testing. Seed all collections at once with `--collection all`. In production, populate `datasets` and `metrics` manually via the admin UI rather than seeding from files.
+`seed_data/datasets.json` has 59 SLP datasets and `seed_data/metrics.json` has 29 evaluation metrics, both for local testing. Seed all collections at once with `--collection all`. In production, populate `datasets` and `metrics` manually via the admin UI rather than seeding from files.
 
 ## Resetting for testing
 

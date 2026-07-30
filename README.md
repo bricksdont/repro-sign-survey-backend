@@ -80,6 +80,14 @@ python3 seed.py --email admin@example.com --password yourpassword --collection m
 
 Running any command again is safe; it skips records that already exist. In production, populate `datasets` and `metrics` manually via the admin UI rather than seeding from files.
 
+Values in the seed file take precedence; `seed.py`'s built-in defaults only fill in keys a record omits. Add `--strict` to fail the run instead, if any record is missing a known field:
+
+```bash
+python3 seed.py --email admin@example.com --password yourpassword --collection all --strict
+```
+
+`papers.datasets` and `papers.metrics` are relation fields: write catalog **names** in the seed file and `seed.py` resolves them to record IDs. Unknown names fail that record, or abort the whole run under `--strict`. Use `--collection all` so the catalogs are seeded before the papers that reference them.
+
 To import from a custom JSON file with real paper data (same `{papers: [...]}` format):
 
 ```bash
@@ -351,8 +359,8 @@ pb_migrations/
 seed_data/
   papers.json                     # seed data: 67 SLP papers (review task)
   check_papers.json               # seed data: 56 SLP papers (checking task)
-  datasets.json                   # seed data: 7 SLP datasets (local testing only)
-  metrics.json                    # seed data: 16 SLP evaluation metrics
+  datasets.json                   # seed data: 59 SLP datasets (local testing only)
+  metrics.json                    # seed data: 29 SLP evaluation metrics
 seed.py                           # imports/resets any collection or all; bulk user creation
 bin/backup                        # in-image Restic backup script (runs on the Fly machine)
 Dockerfile                        # Alpine image for Fly.io deployment
