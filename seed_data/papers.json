@@ -17,7 +17,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2020.conll-1.51",
@@ -36,7 +41,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2020.signlang-1.29",
@@ -55,7 +65,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-L16-1220",
@@ -74,7 +89,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2020.signlang-1.14",
@@ -93,7 +113,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.signlang-1.11",
@@ -112,7 +137,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-L18-1666",
@@ -131,7 +161,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-Y08-1002",
@@ -150,7 +185,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.signlang-1.24",
@@ -169,7 +209,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2021.mtsummit-at4ssl.11",
@@ -188,7 +233,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "arxiv-2011-09846",
@@ -207,7 +257,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "arxiv-2007-12530",
@@ -226,7 +281,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "arxiv-2110-06161",
@@ -245,7 +305,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.acl-long.150",
@@ -264,7 +329,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2023.eacl-main.200",
@@ -283,7 +353,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.acl-short.49",
@@ -302,7 +377,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2021.acl-long.570",
@@ -321,7 +401,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.sltat-1.18",
@@ -340,7 +425,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2023.findings-eacl.127",
@@ -359,7 +449,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2021.mtsummit-at4ssl.1",
@@ -378,7 +473,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2020.signlang-1.15",
@@ -397,7 +497,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2020.coling-main.525",
@@ -416,7 +521,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.sltat-1.15",
@@ -435,7 +545,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "arxiv-2202-03086",
@@ -454,7 +569,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.wmt-1.71",
@@ -473,7 +593,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.emnlp-main.427",
@@ -492,7 +617,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2020.signlang-1.25",
@@ -511,7 +641,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2020.signlang-1.10",
@@ -530,7 +665,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.sltat-1.10",
@@ -549,7 +689,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.sltat-1.19",
@@ -568,7 +713,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2021.bucc-1.4",
@@ -587,7 +737,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2023.at4ssl-1.3",
@@ -606,7 +761,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2023.acl-short.60",
@@ -625,7 +785,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2023.findings-emnlp.846",
@@ -644,7 +809,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2023.findings-acl.665",
@@ -663,7 +833,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.signlang-1.15",
@@ -682,7 +857,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.lrec-main.1289",
@@ -701,7 +881,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2022.sltat-1.9",
@@ -720,7 +905,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2020.signlang-1.30",
@@ -739,7 +929,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.3",
@@ -758,7 +953,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.4",
@@ -777,7 +977,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.5",
@@ -796,7 +1001,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.6",
@@ -815,7 +1025,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.10",
@@ -834,7 +1049,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.12",
@@ -853,7 +1073,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.13",
@@ -872,7 +1097,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.42",
@@ -891,7 +1121,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.44",
@@ -910,7 +1145,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.2",
@@ -929,7 +1169,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.18",
@@ -948,7 +1193,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.24",
@@ -967,7 +1217,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.32",
@@ -986,7 +1241,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.40",
@@ -1005,7 +1265,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.45",
@@ -1024,7 +1289,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.36",
@@ -1043,7 +1313,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.29",
@@ -1062,7 +1337,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.8",
@@ -1081,7 +1361,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.9",
@@ -1100,7 +1385,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.19",
@@ -1119,7 +1409,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.39",
@@ -1138,7 +1433,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.38",
@@ -1157,7 +1457,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.23",
@@ -1176,7 +1481,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.16",
@@ -1195,7 +1505,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.25",
@@ -1214,7 +1529,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "acl-2024.signlang-1.30",
@@ -1233,7 +1553,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "emnlp-2024-518",
@@ -1255,7 +1580,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     },
     {
       "id": "openreview-M80WgiO2Lb",
@@ -1274,7 +1604,12 @@
       "compute_requirements": "",
       "textual_conclusion": "",
       "includes_human_evaluation": "",
-      "status_history": []
+      "status_history": [],
+      "flag_reason": "",
+      "rejection_reason": "",
+      "finalized_by": "",
+      "copied_scores": "",
+      "potential_ethical_concerns": ""
     }
   ]
 }
