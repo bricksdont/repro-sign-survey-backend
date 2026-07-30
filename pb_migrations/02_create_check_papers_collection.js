@@ -57,6 +57,34 @@ migrate((app) => {
         max: 500,
       },
       {
+        name: "language",
+        type: "text",
+        required: false,
+        max: 20,
+      },
+      {
+        name: "abstract",
+        type: "text",
+        required: false,
+        max: 10000,
+      },
+      {
+        name: "filters",
+        type: "json",
+        required: false,
+      },
+      {
+        name: "filter_explanations",
+        type: "json",
+        required: false,
+      },
+      {
+        name: "checked_by",
+        type: "text",
+        required: false,
+        max: 200,
+      },
+      {
         name: "locked_by",
         type: "text",
         required: false,

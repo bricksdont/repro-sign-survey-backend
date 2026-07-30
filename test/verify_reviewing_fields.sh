@@ -2,7 +2,8 @@
 # Manual verification for PR #14 (feature/reviewing-additional-fields).
 #
 # Spins up a throwaway PocketBase instance in a temp directory (never touches
-# pb_data/), applies pb_migrations/09_add_reviewing_fields.js, seeds it, and
+# pb_data/), applies all pb_migrations/ (the reviewing fields live in
+# pb_migrations/01_create_papers_collection.js), seeds it, and
 # exercises the six new `papers` fields end-to-end:
 #   - schema has the right field types/select values
 #   - seeding sets empty defaults

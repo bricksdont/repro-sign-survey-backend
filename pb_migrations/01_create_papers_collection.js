@@ -98,6 +98,43 @@ migrate((app) => {
         maxSelect: 1
       },
       {
+        name: "area_of_slp",
+        type: "json",
+        required: false
+      },
+      {
+        name: "main_experiment_has_ranking",
+        type: "select",
+        required: false,
+        values: ["yes", "no"],
+        maxSelect: 1
+      },
+      {
+        name: "what_to_reproduce",
+        type: "text",
+        required: false,
+        max: 1000
+      },
+      {
+        name: "compute_requirements",
+        type: "text",
+        required: false,
+        max: 1000
+      },
+      {
+        name: "textual_conclusion",
+        type: "text",
+        required: false,
+        max: 2000
+      },
+      {
+        name: "includes_human_evaluation",
+        type: "select",
+        required: false,
+        values: ["yes", "no"],
+        maxSelect: 1
+      },
+      {
         name: "locked_by",
         type: "text",
         required: false,
