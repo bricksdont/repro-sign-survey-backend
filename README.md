@@ -5,7 +5,7 @@
 
 PocketBase backend for the Sign Language Processing reproducibility survey. Provides a shared database and REST API so multiple reviewers can annotate papers simultaneously.
 
-The frontend lives in [repro-sign-survey-ui](https://github.com/bricksdont/repro-sign-survey-ui) (PocketBase integration in progress on the `feature/pocketbase-backend` branch there). This repo handles data persistence only.
+The frontend lives in [repro-sign-survey-ui](https://github.com/bricksdont/repro-sign-survey-ui). This repo handles data persistence only.
 
 ## Quick start
 
@@ -78,7 +78,7 @@ python3 seed.py --email admin@example.com --password yourpassword --collection d
 python3 seed.py --email admin@example.com --password yourpassword --collection metrics
 ```
 
-Running any command again is safe; it skips records that already exist. In production, populate `datasets` and `metrics` manually via the admin UI rather than seeding from files.
+Running any command again is safe; it skips records that already exist. In production, `datasets` and `metrics` are initialized with the seed data, but can also be extended via the frontend interface.
 
 Values in the seed file take precedence; `seed.py`'s built-in defaults only fill in keys a record omits. Add `--strict` to fail the run instead, if any record is missing a known field:
 
@@ -325,14 +325,14 @@ The zip contains the full SQLite database and can be used to restore the instanc
 
 #### Fly.io volume snapshots
 
-Fly.io automatically snapshots the persistent volume daily. Snapshots are retained for **5 days** by default (configurable up to 60 days with `--snapshot-retention`). To list available snapshots:
+Fly.io automatically snapshots the persistent volume daily. Snapshots are retained for **60 days** (maximum `--snapshot-retention`). To list available snapshots:
 
 ```bash
 flyctl volumes list                              # get volume ID
 flyctl volumes snapshots list <volume-id>
 ```
 
-These snapshots are an infrastructure-level safety net, but since they live on Fly.io's infrastructure and are only kept for 5 days, they are not a substitute for periodically downloading a backup zip.
+These snapshots are an infrastructure-level safety net, but since they live on Fly.io's infrastructure and are only kept for 60 days, they are not a substitute for a periodical off-site backup.
 
 ### Useful commands
 
