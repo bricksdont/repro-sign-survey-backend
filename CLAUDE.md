@@ -29,6 +29,7 @@ New fields/rules on an existing collection are added by editing that collection'
 | `seed_data/datasets.json` | 59 SLP datasets for local testing (not intended for production seeding) |
 | `seed_data/metrics.json` | 29 SLP evaluation metrics for local testing |
 | `seed.py` | Idempotent importer; `--collection` targets any collection or `all`; `--reset` resets annotation fields; `--strict` fails on incomplete seed records; `--create-users` for bulk account creation |
+| `export.py` | Inverse of `seed.py`: dumps a collection back to seed-data JSON (relations as names, no lock fields). Reuses `seed.py`'s field tables so the two cannot drift |
 | `scripts/configure_oauth.py` | One-off ops script (superuser API) that enables the Slack OIDC provider on `users`. |
 | `pb_hooks/slack_workspace_guard.pb.js` | PocketBase JS hook restricting Slack (`oidc`) logins to the workspaces in `SLACK_ALLOWED_TEAM_IDS` |
 | `bin/backup` | In-image Restic backup script — sqlite3 `.backup` for consistent DB snapshots, then `restic backup` over the snapshots + `pb_data` (live db files excluded), `restic forget`, and a metadata `restic check`, to an S3 repo. Run inside the Fly machine via a command-restricted machine-exec token |
@@ -200,6 +201,39 @@ Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no 
 ```
 
 `seed_data/datasets.json` has 59 SLP datasets and `seed_data/metrics.json` has 29 evaluation metrics, both for local testing. Seed all collections at once with `--collection all`. In production, populate `datasets` and `metrics` manually via the admin UI rather than seeding from files.
+
+## Exporting
+
+`export.py` is the inverse of `seed.py`: it writes a collection back out in exactly the seed-data shape, so an export can be fed straight back in.
+
+```bash
+source ~/.venvs/repro-sign-survey-backend/bin/activate
+
+# One collection to stdout
+python3 export.py --email me@x.com --password <superuser-password> --collection papers
+
+# One collection to a file
+python3 export.py --email me@x.com --password <superuser-password> \
+    --collection datasets --out datasets.json
+
+# Everything into a directory
+python3 export.py --email me@x.com --password <superuser-password> \
+    --collection all --out-dir exported/
+
+# From the deployed instance
+python3 export.py --pb-url https://repro-sign-survey-backend.fly.dev \
+    --email me@x.com --password <superuser-password> --collection papers
+```
+
+Design notes:
+
+- **No duplicated schema.** The keys an export carries come from `seed.expected_json_keys()` — the same function `--strict` validates against. Adding a field to `SEED_DEFAULTS` or `RECORD_FIELDS` automatically includes it in exports; there is no second list to keep in sync.
+- **Lock fields are excluded**, along with PocketBase's system fields (`id`, `created`, `updated`, `collectionId`, `collectionName`). `locked_by` / `locked_at` are runtime state, and `expected_json_keys()` already drops them.
+- **Relations are written as names.** `papers.datasets` / `papers.metrics` come back as catalog names, not record IDs, which is what `seed.py` resolves on the way in. An ID with no matching catalog record is kept verbatim and reported as a warning (exit 1) rather than silently dropped — re-seeding then fails loudly with `unknown datasets '<id>'`.
+- **stdout carries only JSON.** Progress and warnings go to stderr, so `export.py ... > out.json` is safe to pipe.
+- The unique field is renamed on the way out (`papers.paper_id` → `id`), matching the seed files.
+
+**Round trip.** `seed → export → seed → export` is a fixed point: both exports are identical, verified across all four collections. The one cosmetic difference from the committed seed files is `venue: null` becoming `venue: ""` on papers that have no venue — PocketBase stores empty text as `""`, and `seed.py` drops `None` rather than sending it, so both produce the same database state.
 
 ## Resetting for testing
 

@@ -20,13 +20,13 @@ jobs:
         run: pip install ruff==0.15.22
 
       - name: Lint (ruff check)
-        run: ruff check seed.py scripts/
+        run: ruff check seed.py export.py scripts/
 
       - name: Format check (ruff format)
-        run: ruff format --check seed.py scripts/
+        run: ruff format --check seed.py export.py scripts/
 
       - name: Syntax check
-        run: python3 -m py_compile seed.py scripts/configure_oauth.py
+        run: python3 -m py_compile seed.py export.py scripts/configure_oauth.py
 
       - name: Validate JSON files
         run: |

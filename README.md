@@ -101,7 +101,21 @@ python3 seed.py --email admin@example.com --password yourpassword --collection c
 python3 seed.py --email admin@example.com --password yourpassword --collection all --reset
 ```
 
-### 5. Create reviewer accounts
+### 5. Export data back out
+
+`export.py` is the inverse of `seed.py`: it writes a collection in exactly the seed-data format, so an export can be fed straight back in.
+
+```bash
+python3 export.py --email admin@example.com --password yourpassword --collection papers            # to stdout
+python3 export.py --email admin@example.com --password yourpassword --collection datasets --out datasets.json
+python3 export.py --email admin@example.com --password yourpassword --collection all --out-dir exported/
+```
+
+Add `--pb-url https://repro-sign-survey-backend.fly.dev` to export from the deployed instance.
+
+Lock fields (`locked_by` / `locked_at`) and PocketBase's system fields are omitted, and relation fields are written as catalog **names** rather than record IDs — the form `seed.py` expects. `seed → export → seed → export` is a verified fixed point. Only JSON goes to stdout, so redirecting to a file is safe.
+
+### 6. Create reviewer accounts
 
 **Locally** — open the admin dashboard at http://localhost:8090/_/, navigate to **Collections → users**, and create accounts for each reviewer.
 
@@ -362,6 +376,7 @@ seed_data/
   datasets.json                   # seed data: 59 SLP datasets (local testing only)
   metrics.json                    # seed data: 29 SLP evaluation metrics
 seed.py                           # imports/resets any collection or all; bulk user creation
+export.py                         # dumps a collection back out as seed-data JSON
 bin/backup                        # in-image Restic backup script (runs on the Fly machine)
 Dockerfile                        # Alpine image for Fly.io deployment
 fly.toml                          # Fly.io app config (Frankfurt, persistent volume)
