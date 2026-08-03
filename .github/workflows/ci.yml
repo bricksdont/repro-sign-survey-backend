@@ -30,10 +30,8 @@ jobs:
 
       - name: Validate JSON files
         run: |
-          python3 -m json.tool seed_data/papers.json > /dev/null
-          python3 -m json.tool seed_data/check_papers.json > /dev/null
-          python3 -m json.tool seed_data/datasets.json > /dev/null
-          python3 -m json.tool seed_data/metrics.json > /dev/null
+          # Glob rather than a hardcoded list, so new seed files are covered automatically.
+          for f in seed_data/*.json; do python3 -m json.tool "$f" > /dev/null; done
 
       - name: JS syntax check
         run: |
