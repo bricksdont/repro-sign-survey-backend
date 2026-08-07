@@ -13,7 +13,11 @@ PocketBase backend for a Sign Language Processing reproducibility survey. Multip
 
 ## File layout
 
-New fields/rules on an existing collection are added by editing that collection's original `NN_create_*.js` migration directly, not by appending a new migration file — this project treats the deployed instance as disposable at this stage, so migration history doesn't need to stay stable. Only migrations with a genuine ordering dependency (e.g. a Relation field that needs another collection to exist first) or that target a collection we don't create ourselves (`users`) get their own file.
+**Migrations are append-only. Never edit an existing migration file.** New fields or rule changes on an existing collection get their own `NN_*.js` file, numbered after the highest one present.
+
+This reversed in August 2026, when the deployed instance began holding real review data. Previously the instance was treated as disposable, so schema changes were made by editing the original `NN_create_*.js` migration in place and wiping the database. That no longer works: PocketBase records applied migrations **by filename**, so editing a file that a database has already applied has no effect there — production would silently miss the change, while a fresh local database would pick it up. Renaming or deleting an applied migration is worse, since the file then looks unapplied and PocketBase re-runs it against a database where those collections already exist, which is fatal at startup.
+
+The wipe-and-redeploy of the live instance on 2026-07-31 was the last time the old convention was viable.
 
 | File | Purpose |
 |------|---------|
@@ -24,6 +28,7 @@ New fields/rules on an existing collection are added by editing that collection'
 | `pb_migrations/05_create_metrics_collection.js` | `metrics` collection schema + auth rules |
 | `pb_migrations/06_update_papers_metrics_field.js` | Changes `papers.metrics` from a JSON field to a Relation pointing at `metrics` (runs after `metrics` exists) |
 | `pb_migrations/07_disable_user_registration.js` | Disables self-service registration on `users`; keeps Slack (OAuth2) sign-up working |
+| `pb_migrations/08_add_papers_comments_field.js` | Adds free-form `comments` (text, max 1000) to `papers`. First migration under the append-only rule above |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 59 SLP datasets for local testing (not intended for production seeding) |
@@ -85,7 +90,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 
 ## Data model
 
-**Review task** — `papers` collection (migrations 01, 04, 06):
+**Review task** — `papers` collection (migrations 01, 04, 06, 08):
 - `paper_id` — unique kebab ID (e.g. `acl-2022.emnlp-main.427`), used for URL routing
 - `pdf_url`, `title`, `year`, `venue` — bibliographic fields
 - `peer_reviewed` — select: `yes` | `no` | `na` | empty (not yet answered); annotation field
@@ -104,6 +109,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `textual_conclusion` — text (copy-pasted main conclusion from the paper)
 - `includes_human_evaluation` — select: `yes` | `no` | empty
 - `potential_ethical_concerns` — select: `yes` | `no` | empty
+- `comments` — text (max 1000), free-form reviewer notes; optional
 - `locked_by` / `locked_at` — optimistic lock (enforced in `updateRule`)
 
 **Checking task** — `check_papers` collection (migration 02):
