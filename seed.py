@@ -72,6 +72,7 @@ SEED_DEFAULTS = {
         "finalized_by": "",
         "copied_scores": "",
         "potential_ethical_concerns": "",
+        "comments": "",
         "locked_by": "",
         "locked_at": None,
     },
