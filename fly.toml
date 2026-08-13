@@ -14,7 +14,12 @@ primary_region = 'fra'
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
-  min_machines_running = 0
+  # Keep one machine warm. With 0, Fly stopped the only machine on idle and the
+  # next request paid a multi-second cold start — which exceeded the frontend's
+  # 10s fetch timeout and surfaced as intermittent "Save failed" in the
+  # reviewing form. See issue #51. Do not set this back to 0 while the frontend
+  # has a hard client-side timeout on autosave.
+  min_machines_running = 1
 
 [[vm]]
   memory = '256mb'

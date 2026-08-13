@@ -48,7 +48,7 @@ The wipe-and-redeploy of the live instance on 2026-07-31 was the last time the o
 
 ## Deployed instance
 
-Live at **https://repro-sign-survey-backend.fly.dev** (Frankfurt, auto-stops when idle).
+Live at **https://repro-sign-survey-backend.fly.dev** (Frankfurt, one machine kept always-on — see `min_machines_running` in `fly.toml`).
 
 - Admin dashboard: https://repro-sign-survey-backend.fly.dev/_/
 - API: https://repro-sign-survey-backend.fly.dev/api/

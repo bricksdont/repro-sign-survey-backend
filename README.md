@@ -175,7 +175,7 @@ Note: an earlier attempt crashed partway through with `Can't assign requested ad
 
 ## Deploying to Fly.io
 
-The app is deployed at **https://repro-sign-survey-backend.fly.dev** (Frankfurt region, shared-cpu-1x / 256 MB, auto-stops when idle).
+The app is deployed at **https://repro-sign-survey-backend.fly.dev** (Frankfurt region, shared-cpu-1x / 256 MB, one machine kept always-on).
 
 ### First-time setup
 
@@ -260,8 +260,8 @@ schedule is defined by the `cron` in that workflow file.
 **Why Restic instead of PocketBase's built-in backup?** PocketBase can write scheduled zip
 backups to S3, but each is a full, unencrypted copy of the database. Restic gives us block-level
 deduplication, client-side encryption, and integrity checks (`restic check`) — worth the extra
-binary in the image. (PocketBase's own scheduler wouldn't help anyway: its cron can't fire while
-the auto-stopped machine is asleep, so an external trigger is needed regardless.)
+binary in the image. (PocketBase's own scheduler is also a poor fit: its cron is tied to the app process, so an
+external trigger keeps backups independent of the app's own health.)
 
 **One-time setup:**
 
