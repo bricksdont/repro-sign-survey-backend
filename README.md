@@ -400,6 +400,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `datasets`        | relation | Links to records in the `datasets` collection (multi)   |
 | `metrics`         | relation | Links to records in the `metrics` collection (multi)    |
 | `area_of_slp`     | json   | Array of strings; free-form chip input on the frontend (no fixed enum) |
+| `sub_area_of_slp` | json   | Array of strings; free-form chip input, same shape as `area_of_slp`     |
 | `main_experiment_has_ranking` | select | `yes` · `no` · empty = not yet answered |
 | `what_to_reproduce` | text | Pointer to the table(s)/figure(s) that team R has to reproduce |
 | `compute_requirements` | text | Optional; empty if not specified in the paper |

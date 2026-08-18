@@ -64,6 +64,7 @@ SEED_DEFAULTS = {
         "rejection_reason": "",
         "status_history": [],
         "area_of_slp": [],
+        "sub_area_of_slp": [],
         "main_experiment_has_ranking": "",
         "what_to_reproduce": "",
         "compute_requirements": "",
