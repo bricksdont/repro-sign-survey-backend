@@ -38,6 +38,7 @@ The wipe-and-redeploy of the live instance on 2026-07-31 was the last time the o
 | `export.py` | Inverse of `seed.py`: dumps a collection back to seed-data JSON (relations as names, no lock fields). Reuses `seed.py`'s field tables so the two cannot drift |
 | `scripts/configure_oauth.py` | One-off ops script (superuser API) that enables the Slack OIDC provider on `users`. |
 | `pb_hooks/slack_workspace_guard.pb.js` | PocketBase JS hook restricting Slack (`oidc`) logins to the workspaces in `SLACK_ALLOWED_TEAM_IDS` |
+| `pb_hooks/stale_lock_reaper.pb.js` | PocketBase JS hook (cron, every 5 min) releasing edit locks older than 35 minutes across all four collections |
 | `bin/backup` | In-image Restic backup script — sqlite3 `.backup` for consistent DB snapshots, then `restic backup` over the snapshots + `pb_data` (live db files excluded), `restic forget`, and a metadata `restic check`, to an S3 repo. Run inside the Fly machine via a command-restricted machine-exec token |
 | `Dockerfile` | Alpine image that downloads the PocketBase binary, installs restic/sqlite, and copies `pb_migrations/` + `pb_hooks/` + `bin/backup` |
 | `fly.toml` | Fly.io app config — shared-cpu-1x/256 MB, Frankfurt, persistent volume |
@@ -173,7 +174,13 @@ Lock lifecycle (same for both collections):
 - Release: `PATCH {locked_by: "", locked_at: ""}`
 - Heartbeat: `PATCH {locked_at: <ISO timestamp>}` while editing
 
-Lock expiry (e.g. 30 min after `locked_at`) is enforced client-side only — no server-side TTL in the PoC. The collections are independent; a lock in `papers` has no effect on records in any other collection.
+**Lock expiry is enforced server-side** by `pb_hooks/stale_lock_reaper.pb.js`, which runs every 5 minutes and clears `locked_by`/`locked_at` on any record whose `locked_at` is older than 35 minutes. The frontend applies its own shorter 30-minute expiry for UI purposes; the margin between the two avoids reaping a lock its holder still believes is live. An actively edited lock never ages out, because the heartbeat keeps `locked_at` fresh.
+
+The expiry is *not* in the `updateRule`, and can't be: PocketBase's filter DSL has no arithmetic, so `locked_at < @now - 1800` is rejected with `invalid number "-"`. The reaper computes the cutoff in JS and passes it to the filter as a literal instead. Because the rule is unchanged, a lock is only reclaimable once the reaper has actually released it — there is no way for one user to seize another's live lock.
+
+Before the reaper existed, a crashed tab or closed laptop left a paper locked permanently (issue #52 — locks observed at 77 and 91 hours). The client-side expiry could never fix that on its own: reclaiming someone else's lock means PATCHing `locked_by`, which the `updateRule` rejects with a 404.
+
+The collections are independent; a lock in `papers` has no effect on records in any other collection.
 
 ## PocketBase API quirks (important for frontend integration)
 

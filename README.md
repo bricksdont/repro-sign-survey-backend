@@ -415,7 +415,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `status_history`  | json   | Array of status changes: `{"by", "before", "after", "when"}`; appended client-side |
 | `finalized_by`    | text   | Email of the reviewer who set status to `final`; set client-side |
 | `locked_by`       | text   | User ID of current editor; empty = unlocked             |
-| `locked_at`       | date   | Lock heartbeat timestamp; expiry enforced client-side   |
+| `locked_at`       | date   | Lock heartbeat timestamp; stale locks reaped server-side   |
 
 ### `check_papers` collection
 
@@ -435,7 +435,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `flag_reason`                 | text   |                                                      |
 | `checked_by`                  | text   | Email of the reviewer who completed the check        |
 | `locked_by`                   | text   | User ID of current editor; empty = unlocked          |
-| `locked_at`                   | date   | Lock heartbeat timestamp; expiry enforced client-side|
+| `locked_at`                   | date   | Lock heartbeat timestamp; stale locks reaped server-side|
 
 ### `datasets` collection
 
@@ -447,7 +447,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `available` | select | `yes` · `no` · empty = not yet answered                  |
 | `comments`  | text   |                                                          |
 | `locked_by` | text   | User ID of current editor; empty = unlocked              |
-| `locked_at` | date   | Lock heartbeat timestamp; expiry enforced client-side    |
+| `locked_at` | date   | Lock heartbeat timestamp; stale locks reaped server-side    |
 
 ### `metrics` collection
 
@@ -457,7 +457,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `url`       | json   | Array of URLs (e.g. paper or documentation links)        |
 | `comments`  | text   |                                                          |
 | `locked_by` | text   | User ID of current editor; empty = unlocked              |
-| `locked_at` | date   | Lock heartbeat timestamp; expiry enforced client-side    |
+| `locked_at` | date   | Lock heartbeat timestamp; stale locks reaped server-side    |
 
 ### API access rules
 
@@ -478,7 +478,11 @@ All four collections use the same lock fields (`locked_by` / `locked_at`) and an
 locked_by = "" || locked_by = @request.auth.id
 ```
 
-Collections are fully independent — a lock in `papers` has no effect on records in any other collection. Lock expiry (e.g. 30 minutes after `locked_at`) is checked client-side; a heartbeat keeps the timestamp fresh while editing.
+Collections are fully independent — a lock in `papers` has no effect on records in any other collection. A heartbeat keeps `locked_at` fresh while editing.
+
+**Stale locks are reaped server-side.** `pb_hooks/stale_lock_reaper.pb.js` runs every 5 minutes and clears `locked_by`/`locked_at` on any record whose `locked_at` is older than 35 minutes, so a crashed tab or closed laptop no longer locks a record permanently. The frontend applies a shorter 30-minute expiry for UI purposes; the margin avoids reaping a lock its holder still considers live.
+
+The expiry cannot live in the `updateRule` itself — PocketBase's filter DSL has no arithmetic, so `locked_at < @now - 1800` is rejected. The reaper computes the cutoff in JavaScript and passes it to the filter as a literal. The rule is unchanged, so a lock is only reclaimable once the reaper has released it.
 
 ### PocketBase API quirks
 
