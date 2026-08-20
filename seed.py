@@ -88,6 +88,8 @@ SEED_DEFAULTS = {
     },
     "datasets": {
         "available": "",
+        "on_modal": "",
+        "correspondence": "",
         "locked_by": "",
         "locked_at": "",
     },

@@ -30,6 +30,7 @@ The wipe-and-redeploy of the live instance on 2026-07-31 was the last time the o
 | `pb_migrations/07_disable_user_registration.js` | Disables self-service registration on `users`; keeps Slack (OAuth2) sign-up working |
 | `pb_migrations/08_add_papers_comments_field.js` | Adds free-form `comments` (text, max 1000) to `papers`. First migration under the append-only rule above |
 | `pb_migrations/09_add_papers_sub_area_of_slp_field.js` | Adds `sub_area_of_slp` (JSON array of free-form strings) to `papers` |
+| `pb_migrations/10_add_datasets_correspondence_fields.js` | Adds `on_modal` and `correspondence` selects to `datasets` |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 59 SLP datasets for local testing (not intended for production seeding) |
@@ -128,11 +129,13 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `checked_by` — text, email of the reviewer who last saved the record; set client-side on every save (including flags), not just on finalize
 - `locked_by` / `locked_at` — lock fields (same names as in `papers`; no cross-collection conflict since collections are independent)
 
-**Dataset catalog** — `datasets` collection (`pb_migrations/03_create_datasets_collection.js`):
+**Dataset catalog** — `datasets` collection (migrations 03, 10):
 - `name` — unique dataset name; used as the unique key for seeding
 - `license` — text
 - `url` — JSON array of URLs
 - `available` — select: `yes` | `no` | empty (not yet answered)
+- `on_modal` — select: `yes` | `no` | empty (not yet answered); whether the dataset is available on [Modal](https://modal.com) for running reproductions
+- `correspondence` — select: `contacted_waiting` | `contacted_got_reply` | empty (not contacted yet); status of outreach to the dataset authors
 - `comments` — text
 - `locked_by` / `locked_at` — optimistic lock (same pattern as other collections)
 
