@@ -123,9 +123,6 @@ UNIQUE_FIELD = {
     "check_papers": "paper_id",
     "datasets": "name",
     "metrics": "name",
-    # Not seedable, but referenced as a relation target by datasets.assignees,
-    # so it needs a stable human-readable key for name <-> id resolution.
-    "users": "email",
 }
 UNIQUE_JSON_KEY = {
     "papers": "id",
@@ -141,7 +138,6 @@ LOCK_FIELDS = ("locked_by", "locked_at")
 # *names*; the API needs PocketBase record IDs, so these are resolved at seed time.
 RELATION_FIELDS = {
     "papers": {"datasets": "datasets", "metrics": "metrics"},
-    "datasets": {"assignees": "users"},
 }
 
 # Order used by --collection all: reference catalogs first, then paper collections.

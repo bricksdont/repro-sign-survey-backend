@@ -31,7 +31,7 @@ The wipe-and-redeploy of the live instance on 2026-07-31 was the last time the o
 | `pb_migrations/08_add_papers_comments_field.js` | Adds free-form `comments` (text, max 1000) to `papers`. First migration under the append-only rule above |
 | `pb_migrations/09_add_papers_sub_area_of_slp_field.js` | Adds `sub_area_of_slp` (JSON array of free-form strings) to `papers` |
 | `pb_migrations/10_add_datasets_correspondence_fields.js` | Adds `on_modal` and `correspondence` selects to `datasets` |
-| `pb_migrations/11_add_datasets_assignees_field.js` | Adds `assignees` (multi-select Relation into `users`) to `datasets` |
+| `pb_migrations/11_add_datasets_assignees_field.js` | Adds `assignees` (JSON array of email strings) to `datasets` |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 59 SLP datasets for local testing (not intended for production seeding) |
@@ -137,7 +137,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `available` — select: `yes` | `no` | empty (not yet answered)
 - `on_modal` — select: `yes` | `no` | empty (not yet answered); whether the dataset is available on [Modal](https://modal.com) for running reproductions
 - `correspondence` — select: `contacted_waiting` | `contacted_got_reply` | empty (not contacted yet); status of outreach to the dataset authors
-- `assignees` — **Relation** (multi-select) into the built-in `users` collection; who is responsible for this dataset. Optional, empty by default. `cascadeDelete` is off, so deleting a user detaches them rather than deleting the dataset
+- `assignees` — JSON array of email address strings; who is responsible for this dataset. Optional, `[]` by default. Deliberately *not* a Relation into `users`: that collection's `listRule` prevents a normal reviewer token from listing users to populate a picker. The trade-off is that nothing validates an address against a real account
 - `comments` — text
 - `locked_by` / `locked_at` — optimistic lock (same pattern as other collections)
 
@@ -194,7 +194,7 @@ The collections are independent; a lock in `papers` has no effect on records in 
 - **Record IDs** — PocketBase assigns opaque 15-char IDs (e.g. `xscyqaugyl1plkz`). Use `paper_id` for URL routing; use the PocketBase `id` for API calls.
 - **Superuser auth** endpoint: `POST /api/collections/_superusers/auth-with-password` (different from regular user auth at `/api/collections/users/auth-with-password`).
 - **JSON fields** (`code_repos`, `area_of_slp`) must be sent as actual JSON arrays, not strings.
-- **Relation fields** (`papers.datasets`, `papers.metrics`, `datasets.assignees`) must be sent as an array of PocketBase record IDs (the opaque 15-char `id` of each related record), not names or strings. `seed.py`/`export.py` translate to and from a stable human-readable key — catalog `name` for datasets/metrics, `email` for users.
+- **Relation fields** (`papers.datasets`, `papers.metrics`) must be sent as an array of PocketBase record IDs (the opaque 15-char `id` of each related record), not names or strings. `seed.py`/`export.py` translate to and from the catalog `name`. Note `datasets.assignees` is *not* a relation — it holds plain email strings.
 - **Clearing date fields** — send `""` (empty string), not `null`. Applies to `locked_at`.
 
 ## Seed data
