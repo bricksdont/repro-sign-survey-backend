@@ -43,7 +43,13 @@ cronAdd("clear_stale_locks", "*/5 * * * *", () => {
   const lockTtlMinutes = 35;
 
   // Every collection carrying locked_by / locked_at.
-  const lockedCollections = ["papers", "check_papers", "datasets", "metrics"];
+  const lockedCollections = [
+    "papers",
+    "check_papers",
+    "datasets",
+    "metrics",
+    "reproductions",
+  ];
 
   // PocketBase stores dates as "YYYY-MM-DD HH:MM:SS.sssZ".
   const cutoff = new Date(Date.now() - lockTtlMinutes * 60 * 1000)
