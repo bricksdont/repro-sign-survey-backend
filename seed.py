@@ -90,6 +90,7 @@ SEED_DEFAULTS = {
         "available": "",
         "on_modal": "",
         "correspondence": "",
+        "assignees": [],
         "locked_by": "",
         "locked_at": "",
     },
