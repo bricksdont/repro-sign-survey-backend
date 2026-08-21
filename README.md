@@ -408,6 +408,9 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `includes_human_evaluation` | select | `yes` · `no` · empty = not yet answered |
 | `potential_ethical_concerns` | select | `yes` · `no` · empty = not yet answered |
 | `comments`        | text   | Free-form reviewer notes (max 1000)                     |
+| `reproduction_assignees` | json | Array of email address strings; who is reproducing the paper |
+| `reproduction_status` | select | `in_progress` · `finished` · empty = not started         |
+| `reproduction_url` | json  | Array of URL strings; links about the reproduction        |
 | `copied_scores`   | select | `yes` · `no` · empty = not yet answered; whether baseline scores were copied rather than reproduced |
 | `status`          | select | `needs_review` · `final` · `flagged` · `rejected`       |
 | `flag_reason`     | text   |                                                         |

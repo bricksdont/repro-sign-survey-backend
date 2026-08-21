@@ -32,6 +32,7 @@ The wipe-and-redeploy of the live instance on 2026-07-31 was the last time the o
 | `pb_migrations/09_add_papers_sub_area_of_slp_field.js` | Adds `sub_area_of_slp` (JSON array of free-form strings) to `papers` |
 | `pb_migrations/10_add_datasets_correspondence_fields.js` | Adds `on_modal` and `correspondence` selects to `datasets` |
 | `pb_migrations/11_add_datasets_assignees_field.js` | Adds `assignees` (JSON array of email strings) to `datasets` |
+| `pb_migrations/12_add_papers_reproduction_fields.js` | Adds `reproduction_assignees`, `reproduction_status`, `reproduction_url` to `papers` |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 59 SLP datasets for local testing (not intended for production seeding) |
@@ -94,7 +95,7 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 
 ## Data model
 
-**Review task** — `papers` collection (migrations 01, 04, 06, 08, 09):
+**Review task** — `papers` collection (migrations 01, 04, 06, 08, 09, 12):
 - `paper_id` — unique kebab ID (e.g. `acl-2022.emnlp-main.427`), used for URL routing
 - `pdf_url`, `title`, `year`, `venue` — bibliographic fields
 - `peer_reviewed` — select: `yes` | `no` | `na` | empty (not yet answered); annotation field
@@ -115,6 +116,9 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `includes_human_evaluation` — select: `yes` | `no` | empty
 - `potential_ethical_concerns` — select: `yes` | `no` | empty
 - `comments` — text (max 1000), free-form reviewer notes; optional
+- `reproduction_assignees` — JSON array of email address strings; who is reproducing this paper. Plain strings, not a Relation, for the same reason as `datasets.assignees`
+- `reproduction_status` — select: `in_progress` | `finished` | empty (reproduction not started)
+- `reproduction_url` — JSON array of URL strings; links to more info about the reproduction. Unvalidated, like `datasets.url`
 - `locked_by` / `locked_at` — optimistic lock (enforced in `updateRule`)
 
 **Checking task** — `check_papers` collection (migration 02):
