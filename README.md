@@ -447,6 +447,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `available` | select | `yes` · `no` · empty = not yet answered                  |
 | `on_modal`  | select | `yes` · `no` · empty = not yet answered; is it available on Modal |
 | `correspondence` | select | `contacted_waiting` · `contacted_got_reply` · empty = not contacted yet |
+| `assignees` | relation | Links to `users` (multi); who is responsible. Deleting a user detaches, never deletes the dataset |
 | `comments`  | text   |                                                          |
 | `locked_by` | text   | User ID of current editor; empty = unlocked              |
 | `locked_at` | date   | Lock heartbeat timestamp; stale locks reaped server-side    |
