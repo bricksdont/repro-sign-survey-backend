@@ -98,6 +98,17 @@ SEED_DEFAULTS = {
         "locked_by": "",
         "locked_at": "",
     },
+    # Runtime data: never seeded by default (absent from ALL_COLLECTIONS and
+    # with no seed_data file), but present here so export.py knows its shape
+    # and an export can be seeded back in as a restore.
+    "reproductions": {
+        "assignees": [],
+        "status": "",
+        "url": [],
+        "comments": "",
+        "locked_by": "",
+        "locked_at": "",
+    },
 }
 
 # Bibliographic/catalog fields to copy from the seed JSON file per collection.
@@ -115,6 +126,7 @@ RECORD_FIELDS = {
     ],
     "datasets": ["name", "license", "url", "comments"],
     "metrics": ["name", "url", "comments"],
+    "reproductions": ["paper"],
 }
 
 # API field used to check record existence, and the matching key in the seed JSON.
@@ -123,12 +135,16 @@ UNIQUE_FIELD = {
     "check_papers": "paper_id",
     "datasets": "name",
     "metrics": "name",
+    # The unique index is on the relation itself; there is one reproduction
+    # per paper.
+    "reproductions": "paper",
 }
 UNIQUE_JSON_KEY = {
     "papers": "id",
     "check_papers": "id",
     "datasets": "name",
     "metrics": "name",
+    "reproductions": "paper",
 }
 
 # Server-side runtime state, never carried in seed files. Excluded from --strict.
@@ -138,10 +154,18 @@ LOCK_FIELDS = ("locked_by", "locked_at")
 # *names*; the API needs PocketBase record IDs, so these are resolved at seed time.
 RELATION_FIELDS = {
     "papers": {"datasets": "datasets", "metrics": "metrics"},
+    # Single-valued: exported and seeded as the target's paper_id.
+    "reproductions": {"paper": "papers"},
 }
 
 # Order used by --collection all: reference catalogs first, then paper collections.
 ALL_COLLECTIONS = ["datasets", "metrics", "papers", "check_papers"]
+
+# Collections export.py can dump. Superset of ALL_COLLECTIONS: `reproductions`
+# is real research data that belongs in a snapshot, but is never seeded as part
+# of the default flow. So `seed.py --collection all` covers the four seedable
+# collections, while `export.py --collection all` covers everything.
+EXPORTABLE_COLLECTIONS = ALL_COLLECTIONS + ["reproductions"]
 
 PASSWORD_ALPHABET = string.ascii_letters + string.digits
 PASSWORD_LENGTH = 16
@@ -231,6 +255,18 @@ def fetch_all_records(base_url: str, headers: dict, collection: str) -> list:
 def existing_unique_values(base_url: str, headers: dict, collection: str) -> set:
     records = fetch_all_records(base_url, headers, collection)
     field = UNIQUE_FIELD[collection]
+    relations = RELATION_FIELDS.get(collection, {})
+    if field in relations:
+        # The unique key is itself a relation (reproductions.paper). The API
+        # returns record IDs, but seed files carry the target's readable key,
+        # so translate before comparing or nothing would ever match and every
+        # re-seed would collide with the unique index.
+        target = relations[field]
+        id_to_key = {
+            r["id"]: r[UNIQUE_FIELD[target]]
+            for r in fetch_all_records(base_url, headers, target)
+        }
+        return {id_to_key.get(r[field], r[field]) for r in records}
     return {r[field] for r in records}
 
 
@@ -288,13 +324,16 @@ def resolve_relations(collection: str, item: dict, relation_maps: dict):
         if not name_to_id:
             problems.append(f"{target} catalog is empty - seed {target} first")
             continue
+        # A maxSelect:1 relation is a bare value, not a list. Preserve whichever
+        # shape the seed file used, so single relations round-trip correctly.
+        single = isinstance(names, str)
         ids = []
-        for name in names:
+        for name in [names] if single else names:
             if name in name_to_id:
                 ids.append(name_to_id[name])
             else:
                 problems.append(f"unknown {target} {name!r}")
-        resolved[field] = ids
+        resolved[field] = (ids[0] if ids else "") if single else ids
     return resolved, problems
 
 

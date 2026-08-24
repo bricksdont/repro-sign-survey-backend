@@ -462,6 +462,39 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `locked_by` | text   | User ID of current editor; empty = unlocked              |
 | `locked_at` | date   | Lock heartbeat timestamp; stale locks reaped server-side    |
 
+### `reproductions` collection
+
+One reproduction attempt per paper. **Not seeded by default** — runtime data, created by reviewers as work starts — but it *is* exportable, and an export can be seeded back in as a restore.
+
+| Field       | Type     | Description                                                        |
+|-------------|----------|--------------------------------------------------------------------|
+| `paper`     | relation | Single link to `papers`, required and **unique**. `cascadeDelete` on |
+| `assignees` | json     | Array of email address strings; who is doing the reproduction       |
+| `status`    | select   | `in_progress` · `finished`                                          |
+| `url`       | json     | Array of URL strings; links about the reproduction                  |
+| `comments`  | text     | Free-form notes (max 1000)                                          |
+| `locked_by` | text     | User ID of current editor; independent of the paper's own lock      |
+| `locked_at` | date     | Lock heartbeat timestamp; stale locks reaped server-side            |
+
+**Records are created lazily** — a paper with no reproduction row *is* "not started", so nothing needs syncing as papers are added. Read the state alongside papers in one request:
+
+```
+GET /api/collections/papers/records?expand=reproductions_via_paper
+```
+
+Papers without a reproduction simply have no `expand` entry.
+
+**Exporting:** `export.py --collection reproductions` dumps it, and `export.py --collection all` includes it. The `paper` link is written as the readable `paper_id`, so an export is portable and can be seeded back in:
+
+```bash
+python3 export.py --email admin@example.com --password yourpassword --collection reproductions --out reproductions.json
+python3 seed.py   --email admin@example.com --password yourpassword --collection reproductions --data reproductions.json
+```
+
+Note `seed.py --collection all` still excludes it, since it is not part of the default seeding flow.
+
+This is a separate collection rather than `reproduction_*` fields on `papers` because PocketBase access rules are per-record, not per-field: a second lock on `papers` could not have allowed concurrent editing, since the existing `updateRule` gates every write to the record. Separate collections each carry their own lock, so a reviewer editing a paper and someone editing its reproduction never collide.
+
 ### API access rules
 
 | Operation | `papers` / `check_papers`                              | `datasets` / `metrics`  |
@@ -475,7 +508,7 @@ Self-service registration on the `users` collection is disabled — its `createR
 
 ### Edit locking
 
-All four collections use the same lock fields (`locked_by` / `locked_at`) and an identical server-side `updateRule`:
+All five lockable collections (`papers`, `check_papers`, `datasets`, `metrics`, `reproductions`) use the same lock fields (`locked_by` / `locked_at`) and an identical server-side `updateRule`:
 
 ```
 locked_by = "" || locked_by = @request.auth.id

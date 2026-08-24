@@ -32,6 +32,7 @@ The wipe-and-redeploy of the live instance on 2026-07-31 was the last time the o
 | `pb_migrations/09_add_papers_sub_area_of_slp_field.js` | Adds `sub_area_of_slp` (JSON array of free-form strings) to `papers` |
 | `pb_migrations/10_add_datasets_correspondence_fields.js` | Adds `on_modal` and `correspondence` selects to `datasets` |
 | `pb_migrations/11_add_datasets_assignees_field.js` | Adds `assignees` (JSON array of email strings) to `datasets` |
+| `pb_migrations/12_create_reproductions_collection.js` | Creates `reproductions` — one reproduction attempt per paper, with its own lock |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 59 SLP datasets for local testing (not intended for production seeding) |
@@ -40,7 +41,7 @@ The wipe-and-redeploy of the live instance on 2026-07-31 was the last time the o
 | `export.py` | Inverse of `seed.py`: dumps a collection back to seed-data JSON (relations as names, no lock fields). Reuses `seed.py`'s field tables so the two cannot drift |
 | `scripts/configure_oauth.py` | One-off ops script (superuser API) that enables the Slack OIDC provider on `users`. |
 | `pb_hooks/slack_workspace_guard.pb.js` | PocketBase JS hook restricting Slack (`oidc`) logins to the workspaces in `SLACK_ALLOWED_TEAM_IDS` |
-| `pb_hooks/stale_lock_reaper.pb.js` | PocketBase JS hook (cron, every 5 min) releasing edit locks older than 35 minutes across all four collections |
+| `pb_hooks/stale_lock_reaper.pb.js` | PocketBase JS hook (cron, every 5 min) releasing edit locks older than 35 minutes across all five locked collections |
 | `bin/backup` | In-image Restic backup script — sqlite3 `.backup` for consistent DB snapshots, then `restic backup` over the snapshots + `pb_data` (live db files excluded), `restic forget`, and a metadata `restic check`, to an S3 repo. Run inside the Fly machine via a command-restricted machine-exec token |
 | `Dockerfile` | Alpine image that downloads the PocketBase binary, installs restic/sqlite, and copies `pb_migrations/` + `pb_hooks/` + `bin/backup` |
 | `fly.toml` | Fly.io app config — shared-cpu-1x/256 MB, Frankfurt, persistent volume |
@@ -130,6 +131,33 @@ curl -s -X POST https://repro-sign-survey-backend.fly.dev/api/collections/users/
 - `checked_by` — text, email of the reviewer who last saved the record; set client-side on every save (including flags), not just on finalize
 - `locked_by` / `locked_at` — lock fields (same names as in `papers`; no cross-collection conflict since collections are independent)
 
+**Reproduction tracking** — `reproductions` collection (`pb_migrations/12_create_reproductions_collection.js`):
+- `paper` — **Relation** (single) to `papers`, required, unique. `cascadeDelete` is **on**: deleting a paper removes its reproduction, since an orphan is meaningless
+- `assignees` — JSON array of email address strings; who is doing the reproduction
+- `status` — select: `in_progress` | `finished`
+- `url` — JSON array of URL strings; links about the reproduction. Unvalidated
+- `comments` — text (max 1000)
+- `locked_by` / `locked_at` — optimistic lock, independent of the paper's own lock
+
+**Records are created lazily.** A paper with no reproduction row *is* "not started", so nothing is backfilled or kept in sync as papers are added. The frontend reads the state in one request via the back-relation:
+
+```
+GET /api/collections/papers/records?expand=reproductions_via_paper
+```
+
+A paper with no reproduction simply has no `expand` entry.
+
+**Why a separate collection and not `reproduction_*` fields on `papers`:** PocketBase access rules are per-record, not per-field. A second lock on `papers` could not enable concurrent editing — the existing `updateRule` gates every write to the record, so whoever held the review lock also blocked reproduction edits. Separate collections each carry their own `updateRule`, so the two never collide. Verified: with the paper's review lock held by someone else, editing the paper returns 404 while editing its reproduction returns 200.
+
+**Not seeded by default, but exportable.** It has no `seed_data` file and is absent from `ALL_COLLECTIONS`, so `seed.py --collection all` never touches it. It *is* in the shape tables, so:
+
+- `export.py --collection reproductions` works, and `export.py --collection all` includes it — this is real research data and belongs in a snapshot
+- `seed.py --collection reproductions --data <export>` works as a restore path, and is idempotent
+
+Note the asymmetry: `seed.py --collection all` covers the four seedable collections, while `export.py --collection all` covers all five. `ALL_COLLECTIONS` drives the former, `EXPORTABLE_COLLECTIONS` the latter.
+
+`paper` is exported and seeded as the target's `paper_id`, not a record ID, so exports are portable across databases. It is the only **single-valued** relation in the schema; `seed.py`/`export.py` preserve that shape rather than wrapping it in a list.
+
 **Dataset catalog** — `datasets` collection (migrations 03, 10, 11):
 - `name` — unique dataset name; used as the unique key for seeding
 - `license` — text
@@ -168,7 +196,7 @@ A direct `POST /api/collections/users/records` is rejected, but Slack sign-in st
 
 ## Edit locking
 
-All four collections (`papers`, `check_papers`, `datasets`, `metrics`) use the same lock field names (`locked_by` / `locked_at`) and an identical `updateRule`:
+All five lockable collections (`papers`, `check_papers`, `datasets`, `metrics`, `reproductions`) use the same lock field names (`locked_by` / `locked_at`) and an identical `updateRule`:
 
 ```
 locked_by = "" || locked_by = @request.auth.id
@@ -194,7 +222,7 @@ The collections are independent; a lock in `papers` has no effect on records in 
 - **Record IDs** — PocketBase assigns opaque 15-char IDs (e.g. `xscyqaugyl1plkz`). Use `paper_id` for URL routing; use the PocketBase `id` for API calls.
 - **Superuser auth** endpoint: `POST /api/collections/_superusers/auth-with-password` (different from regular user auth at `/api/collections/users/auth-with-password`).
 - **JSON fields** (`code_repos`, `area_of_slp`) must be sent as actual JSON arrays, not strings.
-- **Relation fields** (`papers.datasets`, `papers.metrics`) must be sent as an array of PocketBase record IDs (the opaque 15-char `id` of each related record), not names or strings. `seed.py`/`export.py` translate to and from the catalog `name`. Note `datasets.assignees` is *not* a relation — it holds plain email strings.
+- **Relation fields** (`papers.datasets`, `papers.metrics`, `reproductions.paper`) must be sent as PocketBase record IDs (the opaque 15-char `id`), not names. Multi-select relations take an array; a `maxSelect: 1` relation such as `reproductions.paper` takes a bare string, not a one-element array. `seed.py`/`export.py` translate to and from a readable key — catalog `name` for datasets/metrics, `paper_id` for papers — and preserve the single/multi shape. Note `datasets.assignees` is *not* a relation; it holds plain email strings.
 - **Clearing date fields** — send `""` (empty string), not `null`. Applies to `locked_at`.
 
 ## Seed data
