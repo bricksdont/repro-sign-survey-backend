@@ -149,7 +149,14 @@ A paper with no reproduction simply has no `expand` entry.
 
 **Why a separate collection and not `reproduction_*` fields on `papers`:** PocketBase access rules are per-record, not per-field. A second lock on `papers` could not enable concurrent editing — the existing `updateRule` gates every write to the record, so whoever held the review lock also blocked reproduction edits. Separate collections each carry their own `updateRule`, so the two never collide. Verified: with the paper's review lock held by someone else, editing the paper returns 404 while editing its reproduction returns 200.
 
-**Not seedable.** This is runtime data — it has no entry in `seed.py`'s tables and no `seed_data` file, so `seed.py`/`export.py` do not touch it. The Restic backups still capture it.
+**Not seeded by default, but exportable.** It has no `seed_data` file and is absent from `ALL_COLLECTIONS`, so `seed.py --collection all` never touches it. It *is* in the shape tables, so:
+
+- `export.py --collection reproductions` works, and `export.py --collection all` includes it — this is real research data and belongs in a snapshot
+- `seed.py --collection reproductions --data <export>` works as a restore path, and is idempotent
+
+Note the asymmetry: `seed.py --collection all` covers the four seedable collections, while `export.py --collection all` covers all five. `ALL_COLLECTIONS` drives the former, `EXPORTABLE_COLLECTIONS` the latter.
+
+`paper` is exported and seeded as the target's `paper_id`, not a record ID, so exports are portable across databases. It is the only **single-valued** relation in the schema; `seed.py`/`export.py` preserve that shape rather than wrapping it in a list.
 
 **Dataset catalog** — `datasets` collection (migrations 03, 10, 11):
 - `name` — unique dataset name; used as the unique key for seeding
@@ -215,7 +222,7 @@ The collections are independent; a lock in `papers` has no effect on records in 
 - **Record IDs** — PocketBase assigns opaque 15-char IDs (e.g. `xscyqaugyl1plkz`). Use `paper_id` for URL routing; use the PocketBase `id` for API calls.
 - **Superuser auth** endpoint: `POST /api/collections/_superusers/auth-with-password` (different from regular user auth at `/api/collections/users/auth-with-password`).
 - **JSON fields** (`code_repos`, `area_of_slp`) must be sent as actual JSON arrays, not strings.
-- **Relation fields** (`papers.datasets`, `papers.metrics`) must be sent as an array of PocketBase record IDs (the opaque 15-char `id` of each related record), not names or strings. `seed.py`/`export.py` translate to and from the catalog `name`. Note `datasets.assignees` is *not* a relation — it holds plain email strings.
+- **Relation fields** (`papers.datasets`, `papers.metrics`, `reproductions.paper`) must be sent as PocketBase record IDs (the opaque 15-char `id`), not names. Multi-select relations take an array; a `maxSelect: 1` relation such as `reproductions.paper` takes a bare string, not a one-element array. `seed.py`/`export.py` translate to and from a readable key — catalog `name` for datasets/metrics, `paper_id` for papers — and preserve the single/multi shape. Note `datasets.assignees` is *not* a relation; it holds plain email strings.
 - **Clearing date fields** — send `""` (empty string), not `null`. Applies to `locked_at`.
 
 ## Seed data

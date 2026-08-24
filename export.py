@@ -39,7 +39,7 @@ import sys
 from pathlib import Path
 
 from seed import (
-    ALL_COLLECTIONS,
+    EXPORTABLE_COLLECTIONS,
     RELATION_FIELDS,
     UNIQUE_FIELD,
     UNIQUE_JSON_KEY,
@@ -61,7 +61,7 @@ def parse_args():
     p.add_argument(
         "--collection",
         default="papers",
-        choices=ALL_COLLECTIONS + ["all"],
+        choices=EXPORTABLE_COLLECTIONS + ["all"],
         help="Collection to export (default: papers); 'all' requires --out-dir",
     )
     p.add_argument(
@@ -114,8 +114,12 @@ def record_to_seed_entry(
 
         if key in relations:
             target = relations[key]
+            # A maxSelect:1 relation comes back as a bare id, not a list.
+            # Preserve that shape so the export re-seeds correctly.
+            single = isinstance(value, str)
+            record_ids = ([value] if value else []) if single else (value or [])
             names = []
-            for record_id in value or []:
+            for record_id in record_ids:
                 name = reverse_maps.get(key, {}).get(record_id)
                 if name is None:
                     # Keep the raw ID rather than dropping it: re-seeding then
@@ -127,7 +131,7 @@ def record_to_seed_entry(
                     names.append(record_id)
                 else:
                     names.append(name)
-            value = names
+            value = (names[0] if names else "") if single else names
 
         entry[key] = value
     return entry
@@ -165,7 +169,9 @@ def main():
         token = authenticate(base_url, args.email, args.password)
     headers = {"Authorization": f"Bearer {token}"}
 
-    collections = ALL_COLLECTIONS if args.collection == "all" else [args.collection]
+    collections = (
+        EXPORTABLE_COLLECTIONS if args.collection == "all" else [args.collection]
+    )
     all_warnings = []
 
     for collection in collections:
