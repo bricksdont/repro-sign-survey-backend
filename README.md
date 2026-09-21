@@ -447,6 +447,9 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `available` | select | `yes` · `no` · empty = not yet answered                  |
 | `on_modal`  | select | `yes` · `no` · empty = not yet answered; is it available on Modal |
 | `correspondence` | select | `contacted_waiting` · `contacted_got_reply` · empty = not contacted yet |
+| `contact_dates` | json  | Array of ISO date strings (`"2026-09-18"`); when the authors were contacted |
+| `permission_to_reproduce` | select | `yes` · `no` · empty = not yet answered              |
+| `permission_model_weights` | select | `yes` · `no` · empty = not yet answered             |
 | `assignees` | json   | Array of email address strings; who is responsible for the dataset          |
 | `comments`  | text   |                                                          |
 | `locked_by` | text   | User ID of current editor; empty = unlocked              |
