@@ -1,7 +1,7 @@
 /// <reference path="../pb_data/types.d.ts" />
 // Add language tracking to `datasets` (issue #66):
 //
-//   sign_languages    json  array of ISO 639-3 codes, [] = unspecified
+//   signed_languages  json  array of ISO 639-3 codes, [] = unspecified
 //   spoken_languages  json  array of ISO 639-3 codes, [] = unspecified
 //
 // The issue asked for a single `languages` list. Split in review because most
@@ -32,7 +32,7 @@ migrate(
 
     collection.fields.add(
       new JSONField({
-        name: "sign_languages",
+        name: "signed_languages",
         required: false,
       }),
     );
@@ -48,7 +48,7 @@ migrate(
 
     const records = app.findRecordsByFilter("datasets", "", "", 0, 0);
     for (const record of records) {
-      record.set("sign_languages", []);
+      record.set("signed_languages", []);
       record.set("spoken_languages", []);
       app.save(record);
     }
@@ -56,7 +56,7 @@ migrate(
   (app) => {
     const collection = app.findCollectionByNameOrId("datasets");
 
-    collection.fields.removeByName("sign_languages");
+    collection.fields.removeByName("signed_languages");
     collection.fields.removeByName("spoken_languages");
 
     app.save(collection);

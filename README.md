@@ -450,7 +450,7 @@ fly.toml                          # Fly.io app config (Frankfurt, persistent vol
 | `contact_dates` | json  | Array of ISO date strings (`"2026-09-18"`); when the authors were contacted |
 | `permission_to_reproduce` | select | `yes` · `no` · empty = not yet answered              |
 | `permission_model_weights` | select | `yes` · `no` · empty = not yet answered             |
-| `sign_languages` | json  | Array of ISO 639-3 codes, e.g. `["ase"]` for American Sign Language |
+| `signed_languages` | json  | Array of ISO 639-3 codes, e.g. `["ase"]` for American Sign Language |
 | `spoken_languages` | json | Array of ISO 639-3 codes for the written/spoken side, e.g. `["eng"]` |
 | `assignees` | json   | Array of email address strings; who is responsible for the dataset          |
 | `comments`  | text   |                                                          |
