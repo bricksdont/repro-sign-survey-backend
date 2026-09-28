@@ -93,6 +93,8 @@ SEED_DEFAULTS = {
         "contact_dates": [],
         "permission_to_reproduce": "",
         "permission_model_weights": "",
+        "signed_languages": [],
+        "spoken_languages": [],
         "assignees": [],
         "locked_by": "",
         "locked_at": "",

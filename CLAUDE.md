@@ -34,6 +34,7 @@ The wipe-and-redeploy of the live instance on 2026-07-31 was the last time the o
 | `pb_migrations/11_add_datasets_assignees_field.js` | Adds `assignees` (JSON array of email strings) to `datasets` |
 | `pb_migrations/12_create_reproductions_collection.js` | Creates `reproductions` — one reproduction attempt per paper, with its own lock |
 | `pb_migrations/13_add_datasets_contact_permission_fields.js` | Adds `contact_dates`, `permission_to_reproduce`, `permission_model_weights` to `datasets` |
+| `pb_migrations/14_add_datasets_language_fields.js` | Adds `signed_languages` and `spoken_languages` (ISO 639-3 code arrays) to `datasets` |
 | `seed_data/papers.json` | 67 SLP seed papers (ACL Anthology + arXiv), sourced from `sign-language-processing/sign-language-processing.github.io` |
 | `seed_data/check_papers.json` | 56 SLP papers for the checking task (subset of `papers.json`, no `venue`/`peer_reviewed`) |
 | `seed_data/datasets.json` | 59 SLP datasets for local testing (not intended for production seeding) |
@@ -159,7 +160,7 @@ Note the asymmetry: `seed.py --collection all` covers the four seedable collecti
 
 `paper` is exported and seeded as the target's `paper_id`, not a record ID, so exports are portable across databases. It is the only **single-valued** relation in the schema; `seed.py`/`export.py` preserve that shape rather than wrapping it in a list.
 
-**Dataset catalog** — `datasets` collection (migrations 03, 10, 11, 13):
+**Dataset catalog** — `datasets` collection (migrations 03, 10, 11, 13, 14):
 - `name` — unique dataset name; used as the unique key for seeding
 - `license` — text
 - `url` — JSON array of URLs
@@ -169,6 +170,7 @@ Note the asymmetry: `seed.py --collection all` covers the four seedable collecti
 - `contact_dates` — JSON array of ISO date strings (`"2026-09-18"`); when the authors were contacted. Complements `correspondence`, which records the *state* of outreach. ISO ordering is deliberate: the strings sort chronologically as plain text, so "most recently contacted" is `max()` over the array with no parsing. Unvalidated, like `datasets.url`. **Not** PocketBase's `date` type, which cannot hold a list — it ignores `maxSelect`, and silently stores `""` if given an array or an unparseable string
 - `permission_to_reproduce` — select: `yes` | `no` | empty (not yet answered)
 - `permission_model_weights` — select: `yes` | `no` | empty (not yet answered)
+- `signed_languages` / `spoken_languages` — JSON arrays of **ISO 639-3** codes (`["gsg"]` / `["deu"]` for PHOENIX-2014-T). Split rather than one `languages` list because most SLP datasets are bilingual, and a flat list loses which code is the sign language. 639-3 rather than 639-1 because the two-letter standard has no sign languages: ASL is `ase`, DGS `gsg`, BSL `bfi`, LSF `fsl`. Unvalidated, like `datasets.url`. Note `check_papers.language` is a different standard (639-1, `"en"`) for a different purpose
 - `assignees` — JSON array of email address strings; who is responsible for this dataset. Optional, `[]` by default. Deliberately *not* a Relation into `users`: that collection's `listRule` prevents a normal reviewer token from listing users to populate a picker. The trade-off is that nothing validates an address against a real account
 - `comments` — text
 - `locked_by` / `locked_at` — optimistic lock (same pattern as other collections)
